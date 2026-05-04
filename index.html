@@ -8,11 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:ital,wght@0,300;0,400;0,600;0,700;1,300&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,600&display=swap" rel="stylesheet" />
 
-  <!-- =========================================================
-       CSS STYLES
-  ========================================================== -->
   <style>
-    /* --- CSS Variables & Reset --- */
     :root {
       --deep:      #0A2540;
       --deep2:     #061828;
@@ -23,21 +19,20 @@
       --white:     #FFFFFF;
       --warn:      #FF6B35;
       --gold:      #f0c060;
+      --navy:      #0d2e4a;
     }
 
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
     html { scroll-behavior: smooth; }
 
     body {
-      background: #0d2e4a;
+      background: var(--navy);
       color: var(--white);
       font-family: 'Poppins', sans-serif;
       overflow-x: hidden;
       cursor: default;
     }
 
-    /* --- Grain Texture Overlay --- */
     body::before {
       content: '';
       position: fixed;
@@ -48,135 +43,141 @@
       z-index: 9999;
     }
 
-    /* --- Global Typography --- */
-    h1, h2, h3 { line-height: 1; }
-    .font-display   { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.04em; }
-    .font-serif     { font-family: 'Playfair Display', serif; }
-    .font-body      { font-family: 'Poppins', sans-serif; }
+    /* ---- LANGUAGE TOGGLE ---- */
+    #lang-toggle {
+      position: fixed;
+      top: 18px;
+      right: 22px;
+      z-index: 10000;
+      display: flex;
+      gap: 0;
+      background: rgba(10,37,64,0.85);
+      border: 1.5px solid rgba(46,196,182,0.4);
+      border-radius: 30px;
+      overflow: hidden;
+      backdrop-filter: blur(8px);
+    }
 
-    /* --- Utility --- */
+    .lang-btn {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      padding: 8px 16px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s, color 0.3s;
+      background: transparent;
+      color: rgba(255,255,255,0.5);
+    }
+
+    .lang-btn.active {
+      background: var(--teal);
+      color: var(--deep2);
+    }
+
+    /* ---- LANGUAGE SWITCHING ---- */
+    [data-en], [data-es] { display: inline; }
+    body.es [data-en] { display: none; }
+    body.es [data-es] { display: inline; }
+    body:not(.es) [data-en] { display: inline; }
+    body:not(.es) [data-es] { display: none; }
+
+    /* ---- CANVASES ---- */
+    #rays-canvas {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none; z-index: 0; opacity: 0.18;
+    }
+    #bubble-canvas {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none; z-index: 1;
+    }
+
+    /* ---- LAYOUT ---- */
+    section { position: relative; z-index: 2; padding: 100px 0; }
     .container { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+
+    /* ---- TYPOGRAPHY ---- */
+    .section-label {
+      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.35em;
+      text-transform: uppercase; color: var(--teal);
+      margin-bottom: 12px; display: block;
+    }
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      line-height: 0.95; color: var(--white); margin-bottom: 28px;
+    }
+    .section-body {
+      font-size: clamp(0.9rem, 2vw, 1.05rem);
+      line-height: 1.85; color: rgba(223,246,240,0.85); max-width: 680px;
+    }
     .text-teal  { color: var(--teal); }
-    .text-sand  { color: var(--sand); }
     .text-warn  { color: var(--warn); }
 
-    /* --- Fade-in on scroll --- */
+    /* ---- REVEAL ANIMATION ---- */
     .reveal {
-      opacity: 0;
-      transform: translateY(40px);
+      opacity: 0; transform: translateY(40px);
       transition: opacity 0.8s ease, transform 0.8s ease;
     }
-    .reveal.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
     .reveal-delay-1 { transition-delay: 0.15s; }
     .reveal-delay-2 { transition-delay: 0.30s; }
     .reveal-delay-3 { transition-delay: 0.45s; }
     .reveal-delay-4 { transition-delay: 0.60s; }
 
-    /* =====================================================
-       LIGHT RAYS CANVAS
-    ===================================================== */
-    #rays-canvas {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      pointer-events: none;
-      z-index: 0;
-      opacity: 0.18;
-    }
-
-    /* =====================================================
-       BUBBLES CANVAS
-    ===================================================== */
-    #bubble-canvas {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      pointer-events: none;
-      z-index: 1;
-    }
-
-    /* =====================================================
-       SECTION WRAPPERS
-    ===================================================== */
-    section {
-      position: relative;
-      z-index: 2;
-      padding: 100px 0;
-    }
-
-    /* =====================================================
-       SECTION 1 — HERO
-    ===================================================== */
+    /* ===================== HERO ===================== */
     #hero {
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 60px 24px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center; padding: 60px 24px;
       background: radial-gradient(ellipse 90% 70% at 50% 10%, #1a5a8a 0%, #155078 25%, #0e3a5c 55%, #0A2540 100%);
       overflow: hidden;
     }
 
     .hero-eyebrow {
-      font-family: 'Poppins', sans-serif;
-      font-size: clamp(0.65rem, 1.5vw, 0.8rem);
-      font-weight: 600;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: var(--teal);
-      margin-bottom: 16px;
+      font-size: clamp(0.65rem, 1.5vw, 0.8rem); font-weight: 600;
+      letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--teal); margin-bottom: 16px;
     }
 
     .hero-title {
       font-family: 'Bebas Neue', sans-serif;
       font-size: clamp(6rem, 22vw, 18rem);
-      line-height: 0.85;
-      color: var(--white);
-      text-shadow: 0 0 60px rgba(46,196,182,0.5), 0 0 120px rgba(46,196,182,0.25), 0 0 200px rgba(46,196,182,0.1);
-      position: relative;
-      z-index: 2;
+      line-height: 0.85; color: var(--white);
+      text-shadow: 0 0 60px rgba(46,196,182,0.5), 0 0 120px rgba(46,196,182,0.25);
     }
 
     .hero-subtitle {
       font-family: 'Playfair Display', serif;
       font-size: clamp(1rem, 3vw, 1.6rem);
-      font-weight: 400;
-      font-style: italic;
-      color: var(--seafoam);
-      letter-spacing: 0.02em;
-      margin-top: 8px;
-      margin-bottom: 40px;
+      font-style: italic; color: var(--seafoam);
+      margin-top: 8px; margin-bottom: 40px;
     }
 
-    /* Vaquita SVG illustration */
     .vaquita-wrap {
-      position: relative;
-      width: min(560px, 92vw);
+      position: relative; width: min(560px, 92vw);
       margin: 0 auto 40px;
     }
 
     .vaquita-glow {
-      position: absolute;
-      inset: -40%;
+      position: absolute; inset: -40%;
       background: radial-gradient(circle, rgba(46,196,182,0.55) 0%, rgba(46,196,182,0.2) 40%, transparent 70%);
       border-radius: 50%;
-      pointer-events: none;
       animation: pulse-glow 4s ease-in-out infinite;
     }
 
     @keyframes pulse-glow {
       0%, 100% { opacity: 0.6; transform: scale(0.95); }
-      50%       { opacity: 1;   transform: scale(1.05); }
+      50%       { opacity: 1; transform: scale(1.05); }
     }
 
     .vaquita-svg {
       width: 100%;
-      filter: drop-shadow(0 0 18px rgba(46,196,182,0.9)) drop-shadow(0 0 48px rgba(46,196,182,0.6)) drop-shadow(0 0 90px rgba(46,196,182,0.3));
+      filter: drop-shadow(0 0 18px rgba(46,196,182,0.9)) drop-shadow(0 0 48px rgba(46,196,182,0.6));
       animation: vaquita-float 6s ease-in-out infinite;
     }
 
@@ -188,859 +189,720 @@
     .hero-tagline {
       font-family: 'Bebas Neue', sans-serif;
       font-size: clamp(1.4rem, 4vw, 2.2rem);
-      letter-spacing: 0.08em;
-      color: var(--warn);
+      letter-spacing: 0.08em; color: var(--warn);
       text-shadow: 0 0 30px rgba(255,107,53,0.5);
       animation: blink-warn 3s ease-in-out infinite;
     }
 
     @keyframes blink-warn {
-      0%, 100% { opacity: 1; }
-      50%       { opacity: 0.7; }
+      0%, 100% { opacity: 1; } 50% { opacity: 0.7; }
     }
 
     .scroll-hint {
-      position: absolute;
-      bottom: 32px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      color: rgba(255,255,255,0.4);
-      font-size: 0.65rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
+      position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      color: rgba(255,255,255,0.4); font-size: 0.65rem;
+      letter-spacing: 0.2em; text-transform: uppercase;
     }
 
     .scroll-arrow {
       width: 20px; height: 30px;
       border: 1.5px solid rgba(255,255,255,0.3);
-      border-radius: 10px;
-      position: relative;
+      border-radius: 10px; position: relative;
     }
     .scroll-arrow::after {
-      content: '';
-      position: absolute;
-      width: 4px; height: 4px;
-      border-radius: 50%;
-      background: var(--teal);
-      left: 50%; top: 6px;
+      content: ''; position: absolute;
+      width: 4px; height: 4px; border-radius: 50%;
+      background: var(--teal); left: 50%; top: 6px;
       transform: translateX(-50%);
       animation: scroll-dot 2s ease-in-out infinite;
     }
     @keyframes scroll-dot {
-      0%   { top: 6px; opacity: 1; }
-      100% { top: 18px; opacity: 0; }
+      0% { top: 6px; opacity: 1; } 100% { top: 18px; opacity: 0; }
     }
 
-    /* =====================================================
-       WAVE DIVIDER
-    ===================================================== */
-    .wave-divider {
-      position: relative;
-      height: 80px;
-      overflow: hidden;
-      z-index: 2;
-    }
+    /* ===================== WAVE DIVIDER ===================== */
+    .wave-divider { position: relative; height: 80px; overflow: hidden; z-index: 2; }
     .wave-divider svg { position: absolute; bottom: 0; width: 100%; }
 
-    /* =====================================================
-       SECTION 2 — WHAT IS VAQUITA?
-    ===================================================== */
-    #about {
-      background: linear-gradient(180deg, #0e3658 0%, #113d60 100%);
-    }
-
-    .section-label {
-      font-family: 'Poppins', sans-serif;
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 0.35em;
-      text-transform: uppercase;
-      color: var(--teal);
-      margin-bottom: 12px;
-      display: block;
-    }
-
-    .section-title {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(2.5rem, 6vw, 4.5rem);
-      line-height: 0.95;
-      color: var(--white);
-      margin-bottom: 28px;
-    }
-
-    .section-body {
-      font-size: clamp(0.9rem, 2vw, 1.05rem);
-      line-height: 1.85;
-      color: rgba(223,246,240,0.85);
-      max-width: 680px;
-    }
+    /* ===================== ABOUT ===================== */
+    #about { background: linear-gradient(180deg, #0e3658 0%, #113d60 100%); }
 
     .facts-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px;
-      margin-top: 48px;
+      gap: 20px; margin-top: 48px;
     }
 
     .fact-card {
       background: rgba(46,196,182,0.07);
       border: 1px solid rgba(46,196,182,0.2);
-      border-radius: 16px;
-      padding: 28px 22px;
-      text-align: center;
+      border-radius: 16px; padding: 28px 22px; text-align: center;
       backdrop-filter: blur(4px);
       transition: transform 0.3s, border-color 0.3s, background 0.3s;
     }
-
     .fact-card:hover {
-      transform: translateY(-6px);
-      border-color: var(--teal);
+      transform: translateY(-6px); border-color: var(--teal);
       background: rgba(46,196,182,0.13);
     }
-
-    .fact-icon {
-      width: 52px; height: 52px;
-      margin: 0 auto 16px;
-      color: var(--teal);
-    }
-
+    .fact-icon { width: 52px; height: 52px; margin: 0 auto 16px; color: var(--teal); }
     .fact-card h3 {
       font-family: 'Bebas Neue', sans-serif;
-      font-size: 1.3rem;
-      letter-spacing: 0.06em;
-      color: var(--seafoam);
-      margin-bottom: 8px;
+      font-size: 1.3rem; letter-spacing: 0.06em;
+      color: var(--seafoam); margin-bottom: 8px;
+    }
+    .fact-card p { font-size: 0.82rem; line-height: 1.65; color: rgba(223,246,240,0.7); }
+
+    /* ===================== IDENTIFY ===================== */
+    #identify { background: linear-gradient(180deg, #113d60 0%, #144468 100%); }
+
+    /* NEW: Vaquita vs Dolphin Comparison */
+    .compare-table-wrap {
+      margin-top: 48px;
+      background: rgba(10,37,64,0.5);
+      border: 1px solid rgba(46,196,182,0.2);
+      border-radius: 18px;
+      overflow: hidden;
     }
 
-    .fact-card p {
-      font-size: 0.82rem;
-      line-height: 1.65;
-      color: rgba(223,246,240,0.7);
+    .compare-table-header {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      background: rgba(46,196,182,0.12);
+      padding: 14px 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
     }
 
-    /* =====================================================
-       SECTION 3 — HOW TO IDENTIFY
-    ===================================================== */
-    #identify {
-      background: linear-gradient(180deg, #113d60 0%, #144468 100%);
+    .compare-table-header span:not(:first-child) { text-align: center; }
+    .compare-table-header .col-vaquita { color: var(--teal); }
+    .compare-table-header .col-dolphin { color: var(--gold); }
+
+    .compare-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      padding: 12px 20px;
+      border-top: 1px solid rgba(46,196,182,0.08);
+      font-size: 0.85rem;
+      align-items: center;
+      transition: background 0.2s;
     }
+    .compare-row:hover { background: rgba(46,196,182,0.05); }
+
+    .compare-row .trait { color: rgba(223,246,240,0.6); font-size: 0.78rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+    .compare-row .val-v { color: var(--teal); font-weight: 600; text-align: center; }
+    .compare-row .val-d { color: rgba(240,192,96,0.8); text-align: center; }
 
     .identify-alert {
       background: rgba(255,107,53,0.12);
       border: 1.5px solid var(--warn);
       border-radius: 14px;
-      padding: 22px 28px;
-      margin-top: 36px;
-      display: flex;
-      align-items: flex-start;
-      gap: 16px;
+      padding: 22px 28px; margin-top: 36px;
+      display: flex; align-items: flex-start; gap: 16px;
     }
-
-    .identify-alert svg {
-      flex-shrink: 0;
-      width: 28px; height: 28px;
-      color: var(--warn);
-      margin-top: 2px;
-    }
-
-    .identify-alert p {
-      font-size: 0.9rem;
-      line-height: 1.7;
-      color: var(--sand);
-    }
-
+    .identify-alert svg { flex-shrink: 0; width: 28px; height: 28px; color: var(--warn); margin-top: 2px; }
+    .identify-alert p { font-size: 0.9rem; line-height: 1.7; color: var(--sand); }
     .identify-alert strong { color: var(--warn); }
 
     .identify-layout {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 48px;
-      align-items: center;
-      margin-top: 48px;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 48px; align-items: center; margin-top: 48px;
     }
-
-    @media (max-width: 680px) {
-      .identify-layout { grid-template-columns: 1fr; }
-    }
+    @media (max-width: 680px) { .identify-layout { grid-template-columns: 1fr; } }
 
     .identify-features li {
-      list-style: none;
-      display: flex;
-      align-items: flex-start;
-      gap: 14px;
+      list-style: none; display: flex;
+      align-items: flex-start; gap: 14px;
       padding: 14px 0;
       border-bottom: 1px solid rgba(46,196,182,0.12);
-      font-size: 0.93rem;
-      line-height: 1.6;
+      font-size: 0.93rem; line-height: 1.6;
       color: rgba(223,246,240,0.85);
     }
-
     .identify-features li:last-child { border-bottom: none; }
-
     .id-bullet {
-      flex-shrink: 0;
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: var(--teal);
-      margin-top: 8px;
-      box-shadow: 0 0 8px var(--teal);
+      flex-shrink: 0; width: 8px; height: 8px;
+      border-radius: 50%; background: var(--teal);
+      margin-top: 8px; box-shadow: 0 0 8px var(--teal);
     }
 
-    /* Labeled diagram */
-    .vaquita-diagram-wrap {
-      position: relative;
-    }
+    .vaquita-diagram-svg { width: 100%; filter: drop-shadow(0 4px 24px rgba(46,196,182,0.25)); }
 
-    .vaquita-diagram-svg {
-      width: 100%;
-      filter: drop-shadow(0 4px 24px rgba(46,196,182,0.25));
-    }
-
-    /* =====================================================
-       SECTION 4 — THE THREAT
-    ===================================================== */
-    #threat {
-      background: linear-gradient(180deg, #0f3558 0%, #0c2e4e 100%);
-      overflow: hidden;
-    }
+    /* ===================== THREAT ===================== */
+    #threat { background: linear-gradient(180deg, #0f3558 0%, #0c2e4e 100%); overflow: hidden; }
 
     .net-overlay {
-      position: absolute;
-      inset: 0;
+      position: absolute; inset: 0;
       background-image:
         linear-gradient(rgba(46,196,182,0.04) 1px, transparent 1px),
         linear-gradient(90deg, rgba(46,196,182,0.04) 1px, transparent 1px);
-      background-size: 32px 32px;
-      pointer-events: none;
+      background-size: 32px 32px; pointer-events: none;
     }
 
     .stats-row {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 20px;
-      margin-top: 48px;
+      gap: 20px; margin-top: 48px;
     }
 
     .stat-card {
-      text-align: center;
-      padding: 32px 20px;
-      border-radius: 16px;
+      text-align: center; padding: 32px 20px; border-radius: 16px;
       background: rgba(10,37,64,0.6);
       border: 1px solid rgba(255,107,53,0.25);
       backdrop-filter: blur(8px);
     }
-
     .stat-number {
       font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(2.8rem, 7vw, 4.5rem);
-      line-height: 1;
-      color: var(--warn);
-      text-shadow: 0 0 40px rgba(255,107,53,0.5);
-      display: block;
+      font-size: clamp(2.8rem, 7vw, 4.5rem); line-height: 1;
+      color: var(--warn); text-shadow: 0 0 40px rgba(255,107,53,0.5); display: block;
+    }
+    .stat-label {
+      font-size: 0.78rem; font-weight: 600; letter-spacing: 0.15em;
+      text-transform: uppercase; color: rgba(244,235,208,0.75);
+      margin-top: 8px; display: block;
     }
 
-    .stat-label {
-      font-size: 0.78rem;
-      font-weight: 600;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: rgba(244,235,208,0.75);
-      margin-top: 8px;
-      display: block;
+    /* ---- POPULATION CHART ---- */
+    .pop-chart-wrap {
+      margin-top: 52px;
+    }
+
+    .pop-chart-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.8rem; letter-spacing: 0.06em;
+      color: var(--seafoam); margin-bottom: 28px;
+    }
+
+    .bar-chart {
+      display: flex; align-items: flex-end;
+      gap: 12px; height: 200px; position: relative;
+      padding-bottom: 36px;
+    }
+
+    .bar-chart::before {
+      content: '';
+      position: absolute; left: 0; right: 0; bottom: 36px;
+      border-top: 1px dashed rgba(46,196,182,0.2);
+    }
+
+    .bar-col {
+      display: flex; flex-direction: column;
+      align-items: center; flex: 1; gap: 6px;
+    }
+
+    .bar-val {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 0.85rem; color: var(--warn);
+      letter-spacing: 0.04em;
+    }
+
+    .bar {
+      width: 100%; border-radius: 5px 5px 0 0;
+      transition: height 1.2s cubic-bezier(0.2,0.8,0.2,1), background 0.3s;
+      cursor: default; position: relative; overflow: visible;
+    }
+
+    .bar:hover { filter: brightness(1.2); }
+
+    .bar-year {
+      position: absolute; bottom: -32px; left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.72rem; color: rgba(255,255,255,0.5);
+      white-space: nowrap; letter-spacing: 0.05em;
     }
 
     .threat-list {
-      margin-top: 40px;
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
+      margin-top: 40px; display: flex;
+      flex-direction: column; gap: 18px;
     }
 
     .threat-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 18px;
+      display: flex; align-items: flex-start; gap: 18px;
       padding: 20px 24px;
       background: rgba(255,107,53,0.06);
       border-left: 3px solid var(--warn);
       border-radius: 0 12px 12px 0;
     }
+    .threat-item svg { flex-shrink: 0; color: var(--warn); width: 24px; height: 24px; margin-top: 2px; }
+    .threat-item h4 { font-weight: 600; font-size: 0.95rem; color: var(--sand); margin-bottom: 4px; }
+    .threat-item p { font-size: 0.85rem; color: rgba(223,246,240,0.7); line-height: 1.65; }
 
-    .threat-item svg {
-      flex-shrink: 0;
-      color: var(--warn);
-      width: 24px; height: 24px;
-      margin-top: 2px;
-    }
-
-    .threat-item h4 {
-      font-family: 'Poppins', sans-serif;
-      font-weight: 600;
-      font-size: 0.95rem;
-      color: var(--sand);
-      margin-bottom: 4px;
-    }
-
-    .threat-item p {
-      font-size: 0.85rem;
-      color: rgba(223,246,240,0.7);
-      line-height: 1.65;
-    }
-
-    /* =====================================================
-       SECTION 5 — ROLE IN ECOSYSTEM
-    ===================================================== */
-    #ecosystem {
-      background: linear-gradient(180deg, #0c2e4e 0%, #0e3658 100%);
-    }
+    /* ===================== ECOSYSTEM ===================== */
+    #ecosystem { background: linear-gradient(180deg, #0c2e4e 0%, #0e3658 100%); }
 
     .ecosystem-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 24px;
-      margin-top: 48px;
+      gap: 24px; margin-top: 48px;
     }
-
     .eco-card {
       background: rgba(46,196,182,0.06);
       border: 1px solid rgba(46,196,182,0.15);
-      border-radius: 18px;
-      padding: 30px 22px;
+      border-radius: 18px; padding: 30px 22px;
       text-align: center;
       transition: transform 0.3s, box-shadow 0.3s;
     }
-
     .eco-card:hover {
       transform: translateY(-8px);
       box-shadow: 0 16px 48px rgba(46,196,182,0.12);
     }
-
-    .eco-card svg {
-      width: 48px; height: 48px;
-      color: var(--teal);
-      margin: 0 auto 16px;
-    }
-
+    .eco-card svg { width: 48px; height: 48px; color: var(--teal); margin: 0 auto 16px; }
     .eco-card h3 {
       font-family: 'Bebas Neue', sans-serif;
-      font-size: 1.2rem;
-      letter-spacing: 0.06em;
-      color: var(--seafoam);
-      margin-bottom: 10px;
+      font-size: 1.2rem; letter-spacing: 0.06em;
+      color: var(--seafoam); margin-bottom: 10px;
     }
-
-    .eco-card p {
-      font-size: 0.83rem;
-      line-height: 1.7;
-      color: rgba(223,246,240,0.7);
-    }
+    .eco-card p { font-size: 0.83rem; line-height: 1.7; color: rgba(223,246,240,0.7); }
 
     .quote-block {
-      margin: 64px auto 0;
-      max-width: 680px;
-      text-align: center;
+      margin: 64px auto 0; max-width: 680px; text-align: center;
       padding: 40px 32px;
       border-top: 1px solid rgba(46,196,182,0.2);
       border-bottom: 1px solid rgba(46,196,182,0.2);
     }
-
     .quote-text {
       font-family: 'Playfair Display', serif;
       font-size: clamp(1.2rem, 3vw, 1.7rem);
-      font-style: italic;
-      line-height: 1.6;
-      color: var(--seafoam);
+      font-style: italic; line-height: 1.6; color: var(--seafoam);
     }
-
     .quote-text::before { content: '\201C'; color: var(--teal); font-size: 3em; line-height: 0; vertical-align: -0.4em; margin-right: 0.05em; }
     .quote-text::after  { content: '\201D'; color: var(--teal); font-size: 3em; line-height: 0; vertical-align: -0.4em; margin-left:  0.05em; }
 
-    /* =====================================================
-       SECTION 6 — WHY FISHERMEN MATTER
-    ===================================================== */
-    #fishermen {
-      background: linear-gradient(180deg, #0e3658 0%, #113d64 100%);
-    }
+    /* ===================== FISHERMEN ===================== */
+    #fishermen { background: linear-gradient(180deg, #0e3658 0%, #113d64 100%); }
 
     .fishermen-intro {
       font-family: 'Bebas Neue', sans-serif;
       font-size: clamp(1.6rem, 4vw, 2.6rem);
-      color: var(--gold);
-      letter-spacing: 0.04em;
-      margin-bottom: 20px;
+      color: var(--gold); letter-spacing: 0.04em; margin-bottom: 20px;
     }
 
     .action-steps {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 20px;
-      margin-top: 40px;
+      gap: 20px; margin-top: 40px;
     }
 
     .action-step {
-      display: flex;
-      gap: 18px;
-      align-items: flex-start;
-      padding: 24px;
+      display: flex; gap: 18px; align-items: flex-start; padding: 24px;
       background: rgba(240,192,96,0.06);
       border: 1px solid rgba(240,192,96,0.2);
       border-radius: 16px;
       transition: border-color 0.3s, background 0.3s;
     }
-
-    .action-step:hover {
-      border-color: var(--gold);
-      background: rgba(240,192,96,0.1);
-    }
-
+    .action-step:hover { border-color: var(--gold); background: rgba(240,192,96,0.1); }
     .step-num {
       font-family: 'Bebas Neue', sans-serif;
-      font-size: 2.5rem;
-      line-height: 1;
-      color: var(--gold);
-      opacity: 0.6;
-      flex-shrink: 0;
+      font-size: 2.5rem; line-height: 1;
+      color: var(--gold); opacity: 0.6; flex-shrink: 0;
     }
-
-    .action-step h4 {
-      font-weight: 600;
-      font-size: 0.95rem;
-      color: var(--sand);
-      margin-bottom: 6px;
-    }
-
-    .action-step p {
-      font-size: 0.83rem;
-      color: rgba(223,246,240,0.7);
-      line-height: 1.65;
-    }
+    .action-step h4 { font-weight: 600; font-size: 0.95rem; color: var(--sand); margin-bottom: 6px; }
+    .action-step p { font-size: 0.83rem; color: rgba(223,246,240,0.7); line-height: 1.65; }
 
     .report-box {
       margin-top: 40px;
       background: rgba(46,196,182,0.1);
       border: 1.5px solid var(--teal);
-      border-radius: 16px;
-      padding: 28px 32px;
-      text-align: center;
+      border-radius: 16px; padding: 28px 32px; text-align: center;
     }
-
     .report-box h3 {
       font-family: 'Bebas Neue', sans-serif;
-      font-size: 1.6rem;
-      letter-spacing: 0.06em;
-      color: var(--teal);
-      margin-bottom: 10px;
+      font-size: 1.6rem; letter-spacing: 0.06em;
+      color: var(--teal); margin-bottom: 10px;
+    }
+    .report-box p { font-size: 0.9rem; color: rgba(223,246,240,0.8); line-height: 1.7; }
+
+    /* NEW: Emergency contact cards */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px; margin-top: 28px;
     }
 
-    .report-box p {
-      font-size: 0.9rem;
-      color: rgba(223,246,240,0.8);
-      line-height: 1.7;
+    .contact-card {
+      background: rgba(10,37,64,0.7);
+      border: 1px solid rgba(46,196,182,0.25);
+      border-radius: 14px;
+      padding: 20px 18px;
+      text-align: left;
+      transition: border-color 0.3s;
     }
+    .contact-card:hover { border-color: var(--teal); }
+    .contact-org {
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--teal); margin-bottom: 6px;
+    }
+    .contact-phone {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.35rem; letter-spacing: 0.06em; color: var(--white);
+    }
+    .contact-desc { font-size: 0.75rem; color: rgba(223,246,240,0.55); margin-top: 4px; line-height: 1.5; }
 
-    /* =====================================================
-       SECTION 7 — CALL TO ACTION
-    ===================================================== */
+    /* ===================== CTA ===================== */
     #cta {
       background: radial-gradient(ellipse 80% 80% at 50% 100%, #1a5f80 0%, #0e3658 50%, #0c2a48 100%);
-      text-align: center;
-      padding: 120px 24px;
+      text-align: center; padding: 120px 24px;
     }
 
     .cta-title {
       font-family: 'Bebas Neue', sans-serif;
       font-size: clamp(2.8rem, 8vw, 6.5rem);
-      line-height: 0.95;
-      color: var(--white);
-      text-shadow: 0 0 80px rgba(46,196,182,0.3);
-      margin-bottom: 12px;
+      line-height: 0.95; color: var(--white);
+      text-shadow: 0 0 80px rgba(46,196,182,0.3); margin-bottom: 12px;
     }
-
     .cta-sub {
       font-family: 'Playfair Display', serif;
       font-style: italic;
       font-size: clamp(1rem, 2.5vw, 1.4rem);
-      color: var(--seafoam);
-      margin-bottom: 56px;
+      color: var(--seafoam); margin-bottom: 56px;
     }
 
-    .cta-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 20px;
-    }
+    .cta-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
 
     .btn {
-      font-family: 'Poppins', sans-serif;
-      font-weight: 600;
-      font-size: 0.85rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      padding: 16px 36px;
-      border-radius: 50px;
-      border: none;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-block;
-      transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
-      position: relative;
-      overflow: hidden;
+      font-family: 'Poppins', sans-serif; font-weight: 600;
+      font-size: 0.85rem; letter-spacing: 0.12em;
+      text-transform: uppercase; padding: 16px 36px;
+      border-radius: 50px; border: none; cursor: pointer;
+      text-decoration: none; display: inline-block;
+      transition: transform 0.3s, box-shadow 0.3s;
+      position: relative; overflow: hidden;
     }
-
     .btn::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: rgba(255,255,255,0.15);
-      opacity: 0;
-      transition: opacity 0.3s;
+      content: ''; position: absolute; inset: 0;
+      background: rgba(255,255,255,0.15); opacity: 0; transition: opacity 0.3s;
     }
-
     .btn:hover::before { opacity: 1; }
 
     .btn-primary {
-      background: var(--teal);
-      color: var(--deep2);
+      background: var(--teal); color: var(--deep2);
       box-shadow: 0 0 30px rgba(46,196,182,0.3);
     }
-
     .btn-primary:hover {
       transform: translateY(-4px) scale(1.03);
       box-shadow: 0 0 60px rgba(46,196,182,0.6), 0 8px 32px rgba(46,196,182,0.3);
     }
-
     .btn-outline {
-      background: transparent;
-      color: var(--white);
+      background: transparent; color: var(--white);
       border: 1.5px solid rgba(255,255,255,0.35);
     }
-
     .btn-outline:hover {
       transform: translateY(-4px) scale(1.03);
-      border-color: var(--teal);
-      color: var(--teal);
+      border-color: var(--teal); color: var(--teal);
       box-shadow: 0 0 30px rgba(46,196,182,0.2);
     }
-
     .btn-warn {
-      background: var(--warn);
-      color: var(--white);
+      background: var(--warn); color: var(--white);
       box-shadow: 0 0 30px rgba(255,107,53,0.3);
     }
-
     .btn-warn:hover {
       transform: translateY(-4px) scale(1.03);
       box-shadow: 0 0 60px rgba(255,107,53,0.5);
     }
 
-    /* =====================================================
-       FOOTER
-    ===================================================== */
+    /* ===================== FOOTER ===================== */
     footer {
-      position: relative;
-      z-index: 2;
-      background: #0a2840;
-      text-align: center;
+      position: relative; z-index: 2;
+      background: #0a2840; text-align: center;
       padding: 40px 24px;
       border-top: 1px solid rgba(46,196,182,0.15);
     }
-
-    footer p {
-      font-size: 0.78rem;
-      color: rgba(255,255,255,0.35);
-      line-height: 1.8;
-    }
-
+    footer p { font-size: 0.78rem; color: rgba(255,255,255,0.35); line-height: 1.8; }
     footer strong { color: var(--teal); }
 
-    /* =====================================================
-       POPULATION TIMELINE
-    ===================================================== */
-    .timeline {
-      margin-top: 48px;
-      position: relative;
-      padding-left: 28px;
-    }
-
+    /* ===================== TIMELINE ===================== */
+    .timeline { margin-top: 48px; position: relative; padding-left: 28px; }
     .timeline::before {
-      content: '';
-      position: absolute;
-      left: 0; top: 0; bottom: 0;
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0;
       width: 2px;
       background: linear-gradient(180deg, var(--warn), rgba(255,107,53,0.1));
     }
-
-    .timeline-item {
-      position: relative;
-      margin-bottom: 28px;
-      padding-left: 16px;
-    }
-
+    .timeline-item { position: relative; margin-bottom: 28px; padding-left: 16px; }
     .timeline-item::before {
-      content: '';
-      position: absolute;
-      left: -28px + 0px;
-      left: calc(-28px + -1px);
-      top: 8px;
-      width: 10px; height: 10px;
-      border-radius: 50%;
-      background: var(--warn);
-      box-shadow: 0 0 10px var(--warn);
+      content: ''; position: absolute;
+      left: calc(-28px - 4px); top: 8px;
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--warn); box-shadow: 0 0 10px var(--warn);
     }
+    .timeline-year { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; color: var(--warn); letter-spacing: 0.06em; }
+    .timeline-detail { font-size: 0.87rem; color: rgba(223,246,240,0.75); line-height: 1.6; margin-top: 2px; }
 
-    .timeline-year {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 1.3rem;
-      color: var(--warn);
-      letter-spacing: 0.06em;
-    }
-
-    .timeline-detail {
-      font-size: 0.87rem;
-      color: rgba(223,246,240,0.75);
-      line-height: 1.6;
-      margin-top: 2px;
-    }
-
-    /* =====================================================
-       RESPONSIVE TWEAKS
-    ===================================================== */
+    /* ===================== RESPONSIVE ===================== */
     @media (max-width: 600px) {
       section { padding: 72px 0; }
       .hero-title { font-size: 5.5rem; }
       .cta-buttons { flex-direction: column; align-items: center; }
+      .compare-table-header, .compare-row { font-size: 0.7rem; padding: 10px 12px; }
+    }
+
+    /* ---- NEW: Source badge at bottom ---- */
+    .source-strip {
+      background: rgba(46,196,182,0.05);
+      border-top: 1px solid rgba(46,196,182,0.12);
+      padding: 16px 24px;
+      text-align: center;
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.3);
+      letter-spacing: 0.08em;
     }
   </style>
 </head>
 
 <body>
 
-  <!-- Light rays background canvas -->
-  <canvas id="rays-canvas" aria-hidden="true"></canvas>
+  <!-- Language Toggle -->
+  <div id="lang-toggle">
+    <button class="lang-btn active" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" onclick="setLang('es')">ES</button>
+  </div>
 
-  <!-- Animated bubbles canvas -->
+  <canvas id="rays-canvas" aria-hidden="true"></canvas>
   <canvas id="bubble-canvas" aria-hidden="true"></canvas>
 
-  <!-- =====================================================
-       HTML STRUCTURE
-  ====================================================== -->
-
-  <!-- ░░░ SECTION 1 — HERO ░░░ -->
+  <!-- ===== SECTION 1 — HERO ===== -->
   <section id="hero">
-    <span class="hero-eyebrow">Conservation Alert · Gulf of California</span>
+    <span class="hero-eyebrow">
+      <span data-en>Conservation Alert · Gulf of California</span>
+      <span data-es>Alerta de Conservación · Golfo de California</span>
+    </span>
 
     <h1 class="hero-title">VAQUITA</h1>
 
-    <p class="hero-subtitle">Saving the World's Rarest Marine Mammal</p>
+    <p class="hero-subtitle">
+      <span data-en>Saving the World's Rarest Marine Mammal</span>
+      <span data-es>Salvando al Mamífero Marino Más Raro del Mundo</span>
+    </p>
 
-    <!-- Vaquita SVG Silhouette with labeled features -->
+    <!-- Vaquita SVG -->
     <div class="vaquita-wrap">
       <div class="vaquita-glow"></div>
       <svg class="vaquita-svg" viewBox="0 0 500 260" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Vaquita porpoise illustration">
-        <!-- Outer glow aura rings -->
         <ellipse cx="240" cy="148" rx="210" ry="85" fill="none" stroke="rgba(46,196,182,0.12)" stroke-width="8"/>
         <ellipse cx="240" cy="148" rx="195" ry="75" fill="none" stroke="rgba(46,196,182,0.18)" stroke-width="4"/>
-
-        <!-- Body base — bright teal-blue gradient simulation -->
         <ellipse cx="240" cy="145" rx="185" ry="68" fill="url(#bodyGrad)"/>
-        <!-- Belly highlight -->
         <ellipse cx="230" cy="163" rx="145" ry="30" fill="url(#bellyGrad)" opacity="0.85"/>
-        <!-- Dorsal ridge highlight -->
         <ellipse cx="240" cy="108" rx="130" ry="18" fill="rgba(100,220,210,0.25)"/>
-
-        <!-- Head -->
         <ellipse cx="78" cy="140" rx="62" ry="50" fill="url(#headGrad)"/>
-        <!-- Head highlight -->
         <ellipse cx="70" cy="118" rx="28" ry="18" fill="rgba(120,230,220,0.3)"/>
-
-        <!-- Snout / Rostrum -->
         <path d="M28 133 Q14 140 18 150 Q28 160 52 154 L68 143 Z" fill="url(#snoutGrad)"/>
-
-        <!-- Dorsal fin — bright with glow edge -->
         <path d="M232 77 Q248 22 272 52 Q262 77 252 77 Z" fill="url(#finGrad)" stroke="#5ee8de" stroke-width="1.5"/>
-        <!-- Dorsal fin inner light -->
         <path d="M242 73 Q252 38 262 55 Q256 73 248 73 Z" fill="rgba(94,232,222,0.3)"/>
-
-        <!-- Pectoral fin -->
         <path d="M125 168 Q104 212 150 200 Q156 183 143 172 Z" fill="url(#finGrad)" stroke="#5ee8de" stroke-width="1"/>
-
-        <!-- Flukes (tail) — bright -->
         <path d="M402 126 Q440 90 458 112 Q446 140 430 137 Q433 158 454 164 Q446 183 412 155 Z" fill="url(#flukeGrad)" stroke="#5ee8de" stroke-width="1.5"/>
-        <!-- Flukes highlight -->
         <path d="M410 130 Q430 108 445 118 Q438 135 428 133 Z" fill="rgba(94,232,222,0.25)"/>
-
-        <!-- Dark eye ring — crisp -->
         <circle cx="68" cy="128" r="15" fill="#071520" stroke="#2EC4B6" stroke-width="2.5"/>
         <circle cx="68" cy="128" r="8" fill="#040e16"/>
-        <!-- Eye shine -->
         <circle cx="72" cy="124" r="3.5" fill="rgba(255,255,255,0.7)"/>
         <circle cx="64" cy="132" r="1.5" fill="rgba(255,255,255,0.3)"/>
-
-        <!-- Dark lip / smile patch -->
         <path d="M22 151 Q36 163 58 158 Q42 172 22 162 Z" fill="#071520" opacity="0.9"/>
-
-        <!-- Surface sheen streaks -->
         <path d="M110 108 Q180 98 280 105" stroke="rgba(200,255,250,0.18)" stroke-width="3" stroke-linecap="round"/>
         <path d="M130 116 Q200 108 300 114" stroke="rgba(200,255,250,0.1)" stroke-width="2" stroke-linecap="round"/>
-
-        <!-- Water ripple lines below -->
         <ellipse cx="240" cy="222" rx="195" ry="13" fill="none" stroke="rgba(46,196,182,0.3)" stroke-width="2"/>
         <ellipse cx="240" cy="233" rx="165" ry="8" fill="none" stroke="rgba(46,196,182,0.18)" stroke-width="1.5"/>
         <ellipse cx="240" cy="241" rx="120" ry="5" fill="none" stroke="rgba(46,196,182,0.1)" stroke-width="1"/>
-
-        <!-- Gradient definitions -->
         <defs>
           <linearGradient id="bodyGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"   stop-color="#3ecfca"/>
-            <stop offset="40%"  stop-color="#2a9fa0"/>
+            <stop offset="0%" stop-color="#3ecfca"/>
+            <stop offset="40%" stop-color="#2a9fa0"/>
             <stop offset="100%" stop-color="#155a6a"/>
           </linearGradient>
           <linearGradient id="bellyGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"   stop-color="#a8f0ec" stop-opacity="0.6"/>
+            <stop offset="0%" stop-color="#a8f0ec" stop-opacity="0.6"/>
             <stop offset="100%" stop-color="#5dd4ce" stop-opacity="0.2"/>
           </linearGradient>
           <radialGradient id="headGrad" cx="35%" cy="35%" r="65%">
-            <stop offset="0%"   stop-color="#4ad4cc"/>
-            <stop offset="60%"  stop-color="#2a9fa0"/>
+            <stop offset="0%" stop-color="#4ad4cc"/>
+            <stop offset="60%" stop-color="#2a9fa0"/>
             <stop offset="100%" stop-color="#155a6a"/>
           </radialGradient>
           <linearGradient id="snoutGrad" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%"   stop-color="#0f3a4e"/>
+            <stop offset="0%" stop-color="#0f3a4e"/>
             <stop offset="100%" stop-color="#2a8090"/>
           </linearGradient>
           <linearGradient id="finGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"   stop-color="#5ee8de"/>
+            <stop offset="0%" stop-color="#5ee8de"/>
             <stop offset="100%" stop-color="#1a7a80"/>
           </linearGradient>
           <linearGradient id="flukeGrad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%"   stop-color="#3ecfca"/>
+            <stop offset="0%" stop-color="#3ecfca"/>
             <stop offset="100%" stop-color="#155a6a"/>
           </linearGradient>
         </defs>
       </svg>
     </div>
 
-    <p class="hero-tagline">⚠ Fewer than 10 remain in the wild</p>
+    <p class="hero-tagline">
+      <span data-en>⚠ Fewer than 10 remain in the wild</span>
+      <span data-es>⚠ Menos de 10 sobreviven en la naturaleza</span>
+    </p>
 
     <div class="scroll-hint" aria-hidden="true">
       <div class="scroll-arrow"></div>
-      <span>Dive Deeper</span>
+      <span data-en>Dive Deeper</span>
+      <span data-es>Explorar</span>
     </div>
   </section>
 
-  <!-- Wave divider -->
   <div class="wave-divider" aria-hidden="true">
     <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
       <path d="M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,80 L0,80 Z" fill="#0d2d4a"/>
     </svg>
   </div>
 
-  <!-- ░░░ SECTION 2 — WHAT IS THE VAQUITA? ░░░ -->
+  <!-- ===== SECTION 2 — WHAT IS THE VAQUITA? ===== -->
   <section id="about">
     <div class="container">
       <div class="reveal">
-        <span class="section-label">The Species</span>
-        <h2 class="section-title">WHAT IS THE<br><span class="text-teal">VAQUITA?</span></h2>
+        <span class="section-label">
+          <span data-en>The Species</span>
+          <span data-es>La Especie</span>
+        </span>
+        <h2 class="section-title">
+          <span data-en>WHAT IS THE<br><span class="text-teal">VAQUITA?</span></span>
+          <span data-es>¿QUÉ ES LA<br><span class="text-teal">VAQUITA?</span></span>
+        </h2>
         <p class="section-body">
-          The Vaquita (<em>Phocoena sinus</em>) — meaning <strong>"little cow"</strong> in Spanish — is the smallest and rarest cetacean on Earth.
-          Found exclusively in the shallow, murky waters of the northern <strong>Gulf of California, Mexico</strong>,
-          it is critically endangered due to bycatch in illegal fishing nets. Once numbering in the thousands,
-          fewer than 10 individuals are believed to survive today.
+          <span data-en>The Vaquita (<em>Phocoena sinus</em>) — meaning <strong>"little cow"</strong> in Spanish — is the smallest and rarest cetacean on Earth. Found exclusively in the shallow, murky waters of the northern <strong>Gulf of California, Mexico</strong>, it is critically endangered due to bycatch in illegal fishing nets. Once numbering in the thousands, fewer than 10 individuals are believed to survive today.</span>
+          <span data-es>La Vaquita (<em>Phocoena sinus</em>) — que significa <strong>"pequeña vaca"</strong> — es el cetáceo más pequeño y raro del mundo. Se encuentra exclusivamente en las aguas poco profundas del norte del <strong>Golfo de California, México</strong>, y está en peligro crítico por la captura incidental en redes de pesca ilegales. De miles que había, hoy se cree que sobreviven menos de 10 individuos.</span>
         </p>
       </div>
 
       <div class="facts-grid">
-        <!-- Card 1 -->
         <div class="fact-card reveal reveal-delay-1">
-          <svg class="fact-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <svg class="fact-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <path d="M6 30 Q12 10 24 18 Q36 26 42 10"/>
             <circle cx="8" cy="32" r="3" fill="currentColor" stroke="none"/>
             <path d="M16 38 Q24 44 32 38"/>
             <path d="M4 40 Q24 50 44 40"/>
           </svg>
-          <h3>Marine Habitat</h3>
-          <p>Shallow coastal lagoons and tidal channels, 0–50 m depth</p>
+          <h3><span data-en>Marine Habitat</span><span data-es>Hábitat Marino</span></h3>
+          <p><span data-en>Shallow coastal lagoons and tidal channels, 0–50 m depth</span><span data-es>Lagunas costeras someras y canales mareales, 0–50 m de profundidad</span></p>
         </div>
-        <!-- Card 2 -->
         <div class="fact-card reveal reveal-delay-2">
-          <svg class="fact-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <svg class="fact-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="24" cy="24" r="18"/>
             <path d="M24 14 L24 6 M24 34 L24 42 M14 24 L6 24 M34 24 L42 24"/>
             <circle cx="24" cy="24" r="6" fill="currentColor" opacity="0.3"/>
             <path d="M24 18 L27 24 L24 30 L21 24 Z" fill="currentColor"/>
           </svg>
-          <h3>Critically Endangered</h3>
-          <p>IUCN Red List — Critically Endangered since 1996, population collapsing</p>
+          <h3><span data-en>Critically Endangered</span><span data-es>En Peligro Crítico</span></h3>
+          <p><span data-en>IUCN Red List — Critically Endangered since 1996, population collapsing</span><span data-es>Lista Roja de la UICN — En Peligro Crítico desde 1996, población en colapso</span></p>
         </div>
-        <!-- Card 3 -->
         <div class="fact-card reveal reveal-delay-3">
-          <svg class="fact-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <svg class="fact-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <path d="M8 36 Q20 20 40 24"/>
             <path d="M10 28 Q14 18 22 16 Q30 14 36 22"/>
             <circle cx="24" cy="32" r="4" fill="currentColor" opacity="0.3"/>
             <path d="M4 40 L44 40"/>
           </svg>
-          <h3>Gulf of California</h3>
-          <p>Unique endemic range — found nowhere else on the planet</p>
+          <h3><span data-en>Gulf of California</span><span data-es>Golfo de California</span></h3>
+          <p><span data-en>Unique endemic range — found nowhere else on the planet</span><span data-es>Rango endémico único — no existe en ningún otro lugar del planeta</span></p>
         </div>
-        <!-- Card 4 -->
         <div class="fact-card reveal reveal-delay-4">
-          <svg class="fact-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <svg class="fact-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 36 Q14 16 24 12 Q34 16 36 36"/>
             <path d="M18 36 Q20 24 24 20 Q28 24 30 36"/>
             <circle cx="24" cy="38" r="3" fill="currentColor"/>
           </svg>
-          <h3>~1.5 m Body Length</h3>
-          <p>Smallest porpoise in the world — about the size of a 10-year-old child</p>
+          <h3>~1.5 m</h3>
+          <p><span data-en>Smallest porpoise in the world — about the size of a 10-year-old child</span><span data-es>La marsopa más pequeña del mundo — del tamaño de un niño de 10 años</span></p>
         </div>
-        <!-- Card 5 -->
         <div class="fact-card reveal reveal-delay-1">
-          <svg class="fact-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <svg class="fact-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="24" cy="20" r="10"/>
             <path d="M14 30 Q24 44 34 30"/>
             <circle cx="20" cy="18" r="2.5" fill="currentColor"/>
             <path d="M20 24 Q24 28 28 24"/>
           </svg>
-          <h3>Shy & Elusive</h3>
-          <p>Rarely seen — typically flees from boats; prefers cloudy, murky water</p>
+          <h3><span data-en>Shy &amp; Elusive</span><span data-es>Tímida y Esquiva</span></h3>
+          <p><span data-en>Rarely seen — typically flees from boats; prefers cloudy, murky water</span><span data-es>Rara vez se ve — huye de las embarcaciones; prefiere aguas turbias</span></p>
         </div>
-        <!-- Card 6 -->
         <div class="fact-card reveal reveal-delay-2">
-          <svg class="fact-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <svg class="fact-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <path d="M8 24 Q24 8 40 24 Q24 40 8 24 Z"/>
             <path d="M16 24 Q24 14 32 24 Q24 34 16 24 Z" fill="currentColor" opacity="0.2"/>
             <circle cx="24" cy="24" r="3" fill="currentColor"/>
           </svg>
-          <h3>Coastal Endemic</h3>
-          <p>Prefers warm, shallow waters with rich fish and squid populations</p>
+          <h3><span data-en>Coastal Endemic</span><span data-es>Endémica Costera</span></h3>
+          <p><span data-en>Prefers warm, shallow waters with rich fish and squid populations</span><span data-es>Prefiere aguas cálidas y someras con abundantes peces y calamares</span></p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Wave divider -->
   <div class="wave-divider" aria-hidden="true">
     <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
       <path d="M0,30 C360,70 720,0 1080,50 C1260,70 1380,20 1440,30 L1440,80 L0,80 Z" fill="#0b3352"/>
     </svg>
   </div>
 
-  <!-- ░░░ SECTION 3 — HOW TO IDENTIFY ░░░ -->
+  <!-- ===== SECTION 3 — HOW TO IDENTIFY ===== -->
   <section id="identify">
     <div class="container">
       <div class="reveal">
-        <span class="section-label" style="color: var(--gold)">For Fishermen · Identificación</span>
-        <h2 class="section-title">HOW TO<br><span style="color: var(--gold)">IDENTIFY</span><br>A VAQUITA</h2>
+        <span class="section-label" style="color: var(--gold)">
+          <span data-en>For Fishermen · Identificación</span>
+          <span data-es>Para Pescadores · Identification</span>
+        </span>
+        <h2 class="section-title">
+          <span data-en>HOW TO<br><span style="color:var(--gold)">IDENTIFY</span><br>A VAQUITA</span>
+          <span data-es>CÓMO<br><span style="color:var(--gold)">IDENTIFICAR</span><br>A LA VAQUITA</span>
+        </h2>
         <p class="section-body">
-          If you are fishing in the northern Gulf of California, you may encounter a Vaquita. Knowing how to recognise it
-          is <strong>essential</strong> — both to protect this critically endangered animal and to comply with conservation law.
-          Here are the key features to look for.
+          <span data-en>If you are fishing in the northern Gulf of California, you may encounter a Vaquita. Knowing how to recognise it is <strong>essential</strong> — both to protect this critically endangered animal and to comply with conservation law. Here are the key features to look for.</span>
+          <span data-es>Si pesca en el norte del Golfo de California, podría encontrarse con una Vaquita. Saber identificarla es <strong>esencial</strong> — tanto para proteger a este animal en peligro crítico como para cumplir con la ley de conservación.</span>
         </p>
+      </div>
+
+      <!-- NEW: Vaquita vs Bottlenose Dolphin Comparison Table -->
+      <div class="compare-table-wrap reveal">
+        <div class="compare-table-header">
+          <span style="color:rgba(223,246,240,0.5)">
+            <span data-en>Feature</span><span data-es>Característica</span>
+          </span>
+          <span class="col-vaquita">
+            <span data-en>Vaquita</span><span data-es>Vaquita</span>
+          </span>
+          <span class="col-dolphin">
+            <span data-en>Bottlenose Dolphin</span><span data-es>Delfín Nariz de Botella</span>
+          </span>
+        </div>
+        <div class="compare-row">
+          <span class="trait"><span data-en>Body length</span><span data-es>Longitud</span></span>
+          <span class="val-v">~1.4–1.5 m</span>
+          <span class="val-d">2.5–3.8 m</span>
+        </div>
+        <div class="compare-row">
+          <span class="trait"><span data-en>Snout</span><span data-es>Hocico</span></span>
+          <span class="val-v"><span data-en>Blunt, rounded</span><span data-es>Romo, redondeado</span></span>
+          <span class="val-d"><span data-en>Long, pointed beak</span><span data-es>Pico largo y puntiagudo</span></span>
+        </div>
+        <div class="compare-row">
+          <span class="trait"><span data-en>Dorsal fin</span><span data-es>Aleta dorsal</span></span>
+          <span class="val-v"><span data-en>Tall, triangular</span><span data-es>Alta, triangular</span></span>
+          <span class="val-d"><span data-en>Curved, hooked</span><span data-es>Curva, ganchuda</span></span>
+        </div>
+        <div class="compare-row">
+          <span class="trait"><span data-en>Eye markings</span><span data-es>Marcas en ojos</span></span>
+          <span class="val-v"><span data-en>Dark eye rings</span><span data-es>Anillos oscuros</span></span>
+          <span class="val-d"><span data-en>None</span><span data-es>Ninguna</span></span>
+        </div>
+        <div class="compare-row">
+          <span class="trait"><span data-en>Lip markings</span><span data-es>Marcas en labios</span></span>
+          <span class="val-v"><span data-en>Dark lip patches</span><span data-es>Manchas oscuras</span></span>
+          <span class="val-d"><span data-en>None</span><span data-es>Ninguna</span></span>
+        </div>
+        <div class="compare-row">
+          <span class="trait"><span data-en>Behaviour</span><span data-es>Comportamiento</span></span>
+          <span class="val-v"><span data-en>Shy, avoids boats</span><span data-es>Tímida, evita botes</span></span>
+          <span class="val-d"><span data-en>Curious, approaches boats</span><span data-es>Curiosa, se acerca</span></span>
+        </div>
+        <div class="compare-row">
+          <span class="trait"><span data-en>Body colour</span><span data-es>Color del cuerpo</span></span>
+          <span class="val-v"><span data-en>Light grey / white belly</span><span data-es>Gris claro / vientre blanco</span></span>
+          <span class="val-d"><span data-en>Grey / cream belly</span><span data-es>Gris / vientre crema</span></span>
+        </div>
       </div>
 
       <div class="identify-layout">
@@ -1049,56 +911,63 @@
           <li>
             <span class="id-bullet"></span>
             <div>
-              <strong style="color:var(--seafoam)">Dark rings around the eyes</strong><br>
-              Distinctive black eye-patches — like spectacles — clearly visible at close range
+              <strong style="color:var(--seafoam)"><span data-en>Dark rings around the eyes</span><span data-es>Anillos oscuros alrededor de los ojos</span></strong><br>
+              <span data-en>Distinctive black eye-patches — like spectacles — clearly visible at close range</span>
+              <span data-es>Manchas negras características en los ojos — como anteojos — claramente visibles de cerca</span>
             </div>
           </li>
           <li>
             <span class="id-bullet"></span>
             <div>
-              <strong style="color:var(--seafoam)">Dark lip patches</strong><br>
-              Curved dark markings on the lips giving the appearance of a faint smile
+              <strong style="color:var(--seafoam)"><span data-en>Dark lip patches</span><span data-es>Manchas oscuras en los labios</span></strong><br>
+              <span data-en>Curved dark markings on the lips giving the appearance of a faint smile</span>
+              <span data-es>Marcas oscuras curvas en los labios que dan apariencia de una leve sonrisa</span>
             </div>
           </li>
           <li>
             <span class="id-bullet"></span>
             <div>
-              <strong style="color:var(--seafoam)">Light grey body, white underside</strong><br>
-              Overall pale grey colouring on the back, fading to white on the belly
+              <strong style="color:var(--seafoam)"><span data-en>Light grey body, white underside</span><span data-es>Cuerpo gris claro, vientre blanco</span></strong><br>
+              <span data-en>Overall pale grey colouring on the back, fading to white on the belly</span>
+              <span data-es>Coloración gris claro en el dorso que se desvanece a blanco en el vientre</span>
             </div>
           </li>
           <li>
             <span class="id-bullet"></span>
             <div>
-              <strong style="color:var(--seafoam)">Short, blunt snout (no beak)</strong><br>
-              Unlike dolphins, the Vaquita has a rounded head with no elongated rostrum
+              <strong style="color:var(--seafoam)"><span data-en>Short, blunt snout — NO beak</span><span data-es>Hocico corto y romo — SIN pico</span></strong><br>
+              <span data-en>Unlike dolphins, the Vaquita has a rounded head with no elongated rostrum</span>
+              <span data-es>A diferencia de los delfines, la Vaquita tiene cabeza redondeada sin rostro alargado</span>
             </div>
           </li>
           <li>
             <span class="id-bullet"></span>
             <div>
-              <strong style="color:var(--seafoam)">Large triangular dorsal fin</strong><br>
-              Relatively tall dorsal fin for its small body size — helps distinguish it from dolphins
+              <strong style="color:var(--seafoam)"><span data-en>Large triangular dorsal fin</span><span data-es>Aleta dorsal grande y triangular</span></strong><br>
+              <span data-en>Relatively tall dorsal fin for its small body size — helps distinguish it from dolphins</span>
+              <span data-es>Aleta dorsal relativamente alta para su tamaño corporal — ayuda a distinguirla de los delfines</span>
             </div>
           </li>
           <li>
             <span class="id-bullet"></span>
             <div>
-              <strong style="color:var(--seafoam)">Compact, stocky body (~1.5 m)</strong><br>
-              Much smaller than a bottlenose dolphin — roughly the size of a large dog
+              <strong style="color:var(--seafoam)"><span data-en>Compact, stocky body (~1.5 m)</span><span data-es>Cuerpo compacto y robusto (~1.5 m)</span></strong><br>
+              <span data-en>Much smaller than a bottlenose dolphin — roughly the size of a large dog</span>
+              <span data-es>Mucho más pequeña que un delfín nariz de botella — del tamaño de un perro grande</span>
             </div>
           </li>
           <li>
             <span class="id-bullet"></span>
             <div>
-              <strong style="color:var(--seafoam)">Quick, shy surface behaviour</strong><br>
-              Briefly surfaces to breathe and quickly dives — rarely jumps or approaches boats
+              <strong style="color:var(--seafoam)"><span data-en>Quick, shy surface behaviour</span><span data-es>Comportamiento de superficie rápido y tímido</span></strong><br>
+              <span data-en>Briefly surfaces to breathe and quickly dives — rarely jumps or approaches boats</span>
+              <span data-es>Sale brevemente a respirar y se sumerge rápidamente — rara vez salta o se acerca a botes</span>
             </div>
           </li>
         </ul>
 
         <!-- Annotated diagram -->
-        <div class="vaquita-diagram-wrap reveal reveal-delay-2">
+        <div class="reveal reveal-delay-2">
           <svg class="vaquita-diagram-svg" viewBox="0 0 480 320" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Labeled Vaquita diagram">
             <!-- Body -->
             <ellipse cx="230" cy="175" rx="170" ry="62" fill="#1a5a7a" opacity="0.85"/>
@@ -1120,34 +989,44 @@
             <!-- Lip patch -->
             <path d="M26 178 Q36 187 54 183 Q41 194 26 183 Z" fill="#0d1a2a" opacity="0.8"/>
 
-            <!-- ANNOTATION LINES & LABELS -->
-            <!-- Eye -->
-            <line x1="80" y1="143" x2="130" y2="108" stroke="#2EC4B6" stroke-width="1" stroke-dasharray="3,3"/>
-            <text x="133" y="106" fill="#2EC4B6" font-family="Poppins, sans-serif" font-size="10" font-weight="600">Dark eye rings</text>
+            <!-- ANNOTATION LINES & LABELS — corrected positions -->
+            <!-- Eye annotation -->
+            <line x1="80" y1="148" x2="148" y2="112" stroke="#2EC4B6" stroke-width="1" stroke-dasharray="3,3"/>
+            <circle cx="80" cy="148" r="2" fill="#2EC4B6"/>
+            <text x="151" y="110" fill="#2EC4B6" font-family="Poppins, sans-serif" font-size="10" font-weight="600">Dark eye rings</text>
 
-            <!-- Lips -->
-            <line x1="42" y1="186" x2="30" y2="220" stroke="#2EC4B6" stroke-width="1" stroke-dasharray="3,3"/>
-            <text x="5" y="234" fill="#2EC4B6" font-family="Poppins, sans-serif" font-size="10" font-weight="600">Dark lip patch</text>
+            <!-- Lip annotation -->
+            <line x1="38" y1="187" x2="20" y2="228" stroke="#2EC4B6" stroke-width="1" stroke-dasharray="3,3"/>
+            <circle cx="38" cy="187" r="2" fill="#2EC4B6"/>
+            <text x="2" y="241" fill="#2EC4B6" font-family="Poppins, sans-serif" font-size="10" font-weight="600">Dark lip patch</text>
 
-            <!-- Dorsal fin -->
-            <line x1="248" y1="75" x2="295" y2="48" stroke="#f0c060" stroke-width="1" stroke-dasharray="3,3"/>
-            <text x="298" y="46" fill="#f0c060" font-family="Poppins, sans-serif" font-size="10" font-weight="600">Triangular dorsal fin</text>
+            <!-- Dorsal fin annotation -->
+            <line x1="242" y1="74" x2="292" y2="44" stroke="#f0c060" stroke-width="1" stroke-dasharray="3,3"/>
+            <circle cx="242" cy="74" r="2" fill="#f0c060"/>
+            <text x="295" y="42" fill="#f0c060" font-family="Poppins, sans-serif" font-size="10" font-weight="600">Tall dorsal fin</text>
 
-            <!-- Body colour -->
-            <line x1="300" y1="158" x2="360" y2="128" stroke="rgba(223,246,240,0.6)" stroke-width="1" stroke-dasharray="3,3"/>
-            <text x="363" y="126" fill="rgba(223,246,240,0.8)" font-family="Poppins, sans-serif" font-size="10" font-weight="600">Grey back</text>
+            <!-- Grey back annotation -->
+            <line x1="295" y1="155" x2="358" y2="122" stroke="rgba(223,246,240,0.7)" stroke-width="1" stroke-dasharray="3,3"/>
+            <circle cx="295" cy="155" r="2" fill="rgba(223,246,240,0.7)"/>
+            <text x="361" y="120" fill="rgba(223,246,240,0.85)" font-family="Poppins, sans-serif" font-size="10" font-weight="600">Grey back</text>
 
-            <!-- Belly -->
-            <line x1="230" y1="216" x2="230" y2="255" stroke="rgba(223,246,240,0.6)" stroke-width="1" stroke-dasharray="3,3"/>
-            <text x="186" y="268" fill="rgba(223,246,240,0.8)" font-family="Poppins, sans-serif" font-size="10" font-weight="600">White underside</text>
+            <!-- White belly annotation -->
+            <line x1="230" y1="217" x2="230" y2="254" stroke="rgba(223,246,240,0.6)" stroke-width="1" stroke-dasharray="3,3"/>
+            <circle cx="230" cy="217" r="2" fill="rgba(223,246,240,0.6)"/>
+            <text x="186" y="267" fill="rgba(223,246,240,0.8)" font-family="Poppins, sans-serif" font-size="10" font-weight="600">White underside</text>
 
-            <!-- Flukes -->
-            <line x1="432" y1="154" x2="460" y2="130" stroke="#f0c060" stroke-width="1" stroke-dasharray="3,3"/>
-            <text x="355" y="288" fill="#f0c060" font-family="Poppins, sans-serif" font-size="10" font-weight="600">Notched flukes</text>
-            <line x1="412" y1="174" x2="395" y2="286" stroke="#f0c060" stroke-width="1" stroke-dasharray="3,3"/>
+            <!-- Flukes annotation -->
+            <line x1="418" y1="174" x2="418" y2="286" stroke="#f0c060" stroke-width="1" stroke-dasharray="3,3"/>
+            <circle cx="418" cy="174" r="2" fill="#f0c060"/>
+            <text x="368" y="298" fill="#f0c060" font-family="Poppins, sans-serif" font-size="10" font-weight="600">Notched flukes</text>
 
-            <!-- Compact body label -->
-            <text x="155" y="310" fill="rgba(223,246,240,0.6)" font-family="Poppins, sans-serif" font-size="9">~1.5 m total length</text>
+            <!-- Blunt snout annotation -->
+            <line x1="24" y1="172" x2="4" y2="148" stroke="#f0c060" stroke-width="1" stroke-dasharray="3,3"/>
+            <circle cx="24" cy="172" r="2" fill="#f0c060"/>
+            <text x="-2" y="143" fill="#f0c060" font-family="Poppins, sans-serif" font-size="10" font-weight="600">Blunt snout</text>
+
+            <!-- Size ruler -->
+            <text x="142" y="310" fill="rgba(223,246,240,0.6)" font-family="Poppins, sans-serif" font-size="9">~1.5 m total length</text>
             <line x1="68" y1="304" x2="390" y2="304" stroke="rgba(223,246,240,0.3)" stroke-width="1"/>
             <line x1="68" y1="300" x2="68" y2="308" stroke="rgba(223,246,240,0.3)" stroke-width="1"/>
             <line x1="390" y1="300" x2="390" y2="308" stroke="rgba(223,246,240,0.3)" stroke-width="1"/>
@@ -1162,32 +1041,35 @@
           <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
         </svg>
         <p>
-          <strong>If you spot a Vaquita:</strong> Stop all net activity immediately. Give the animal ample space to move freely.
-          Do not pursue or approach it. <strong>Report the sighting</strong> to CONAPESCA or SEMARNAT conservation authorities at once.
-          Your observation could be one of the most important wildlife sightings in the world.
+          <span data-en><strong>If you spot a Vaquita:</strong> Stop all net activity immediately. Give the animal ample space to move freely. Do not pursue or approach it. <strong>Report the sighting</strong> to CONAPESCA or SEMARNAT conservation authorities at once. Your observation could be one of the most important wildlife sightings in the world.</span>
+          <span data-es><strong>Si avista una Vaquita:</strong> Detenga toda actividad con redes de inmediato. Déle espacio al animal para moverse libremente. No la persiga ni se acerque. <strong>Reporte el avistamiento</strong> a CONAPESCA o SEMARNAT de inmediato. Su observación podría ser uno de los avistamientos de vida silvestre más importantes del mundo.</span>
         </p>
       </div>
     </div>
   </section>
 
-  <!-- Wave divider -->
   <div class="wave-divider" aria-hidden="true">
     <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
       <path d="M0,50 C180,0 360,70 540,30 C720,0 900,60 1080,30 C1260,5 1380,50 1440,50 L1440,80 L0,80 Z" fill="#091e34"/>
     </svg>
   </div>
 
-  <!-- ░░░ SECTION 4 — THE THREAT ░░░ -->
+  <!-- ===== SECTION 4 — THE THREAT ===== -->
   <section id="threat">
     <div class="net-overlay" aria-hidden="true"></div>
     <div class="container">
       <div class="reveal">
-        <span class="section-label" style="color:var(--warn)">The Crisis</span>
-        <h2 class="section-title">THE SILENT<br><span class="text-warn">TRAP</span></h2>
+        <span class="section-label" style="color:var(--warn)">
+          <span data-en>The Crisis</span>
+          <span data-es>La Crisis</span>
+        </span>
+        <h2 class="section-title">
+          <span data-en>THE SILENT<br><span class="text-warn">TRAP</span></span>
+          <span data-es>LA TRAMPA<br><span class="text-warn">SILENCIOSA</span></span>
+        </h2>
         <p class="section-body">
-          The Vaquita does not die from disease or natural predation. It drowns — tangled silently in
-          <strong>illegal gillnets</strong> set to catch the totoaba fish, whose swim bladder is
-          smuggled illegally to China for traditional medicine. Every net left in Vaquita habitat is a potential death sentence.
+          <span data-en>The Vaquita does not die from disease or natural predation. It drowns — tangled silently in <strong>illegal gillnets</strong> set to catch the totoaba fish, whose swim bladder is smuggled illegally to China for traditional medicine. Every net left in Vaquita habitat is a potential death sentence.</span>
+          <span data-es>La Vaquita no muere por enfermedad o depredación natural. Se ahoga — enredada silenciosamente en <strong>redes de enmalle ilegales</strong> tendidas para capturar la totoaba, cuya vejiga natatoria se trafica ilegalmente a China para medicina tradicional. Cada red en el hábitat de la Vaquita es una posible sentencia de muerte.</span>
         </p>
       </div>
 
@@ -1195,52 +1077,30 @@
       <div class="stats-row">
         <div class="stat-card reveal reveal-delay-1">
           <span class="stat-number">&lt;10</span>
-          <span class="stat-label">Vaquitas remaining globally</span>
+          <span class="stat-label"><span data-en>Vaquitas remaining globally</span><span data-es>Vaquitas restantes en el mundo</span></span>
         </div>
         <div class="stat-card reveal reveal-delay-2">
           <span class="stat-number">97%</span>
-          <span class="stat-label">Population lost since 1997</span>
+          <span class="stat-label"><span data-en>Population lost since 1997</span><span data-es>Población perdida desde 1997</span></span>
         </div>
         <div class="stat-card reveal reveal-delay-3">
           <span class="stat-number">#1</span>
-          <span class="stat-label">Most endangered marine mammal</span>
+          <span class="stat-label"><span data-en>Most endangered marine mammal</span><span data-es>Mamífero marino más amenazado</span></span>
         </div>
         <div class="stat-card reveal reveal-delay-4">
           <span class="stat-number">0</span>
-          <span class="stat-label">Individuals survive in captivity</span>
+          <span class="stat-label"><span data-en>Individuals survive in captivity</span><span data-es>Individuos sobreviven en cautiverio</span></span>
         </div>
       </div>
 
-      <!-- Population decline timeline -->
-      <div class="reveal" style="margin-top:60px">
-        <h3 style="font-family:'Bebas Neue',sans-serif; font-size:1.8rem; letter-spacing:0.06em; color:var(--seafoam); margin-bottom:8px;">
-          POPULATION TIMELINE
+      <!-- IMPROVED: Visual Population Decline Bar Chart -->
+      <div class="pop-chart-wrap reveal">
+        <h3 class="pop-chart-title">
+          <span data-en>POPULATION COLLAPSE</span>
+          <span data-es>COLAPSO POBLACIONAL</span>
         </h3>
-        <div class="timeline">
-          <div class="timeline-item">
-            <div class="timeline-year">1997</div>
-            <div class="timeline-detail">Estimated ~567 individuals — first scientific count confirms the species is endangered</div>
-          </div>
-          <div class="timeline-item">
-            <div class="timeline-year">2008</div>
-            <div class="timeline-detail">Population drops to ~245 — gillnet bycatch accelerating decline</div>
-          </div>
-          <div class="timeline-item">
-            <div class="timeline-year">2012</div>
-            <div class="timeline-detail">Only ~200 Vaquitas remain — IUCN uplists to Critically Endangered</div>
-          </div>
-          <div class="timeline-item">
-            <div class="timeline-year">2015</div>
-            <div class="timeline-detail">~97 individuals — Mexico announces gillnet ban in Vaquita refuge</div>
-          </div>
-          <div class="timeline-item">
-            <div class="timeline-year">2018</div>
-            <div class="timeline-detail">Fewer than 19 remain — illegal totoaba poaching reaches peak</div>
-          </div>
-          <div class="timeline-item">
-            <div class="timeline-year">2022–2024</div>
-            <div class="timeline-detail">Estimated 6–10 surviving individuals — each sighting is a miracle</div>
-          </div>
+        <div class="bar-chart" id="barChart">
+          <!-- Bars will be inserted by JS -->
         </div>
       </div>
 
@@ -1251,8 +1111,8 @@
             <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
           </svg>
           <div>
-            <h4>Illegal Gillnet Bycatch</h4>
-            <p>Transparent monofilament nets set for totoaba fish are invisible underwater. Vaquitas swim into them and cannot surface to breathe, drowning within minutes.</p>
+            <h4><span data-en>Illegal Gillnet Bycatch</span><span data-es>Captura Incidental en Redes Ilegales</span></h4>
+            <p><span data-en>Transparent monofilament nets set for totoaba fish are invisible underwater. Vaquitas swim into them and cannot surface to breathe, drowning within minutes.</span><span data-es>Las redes de monofilamento transparente para totoaba son invisibles bajo el agua. Las Vaquitas quedan atrapadas y no pueden salir a respirar, ahogándose en minutos.</span></p>
           </div>
         </div>
         <div class="threat-item reveal reveal-delay-2">
@@ -1261,8 +1121,8 @@
             <line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
           </svg>
           <div>
-            <h4>Totoaba Black Market</h4>
-            <p>The totoaba swim bladder fetches up to $50,000 USD per kilogram on the black market in Asia — one of the highest-value wildlife contraband items in the world.</p>
+            <h4><span data-en>Totoaba Black Market</span><span data-es>Mercado Negro de Totoaba</span></h4>
+            <p><span data-en>The totoaba swim bladder fetches up to $50,000 USD per kilogram on the black market in Asia — one of the highest-value wildlife contraband items in the world.</span><span data-es>La vejiga natatoria de la totoaba alcanza hasta $50,000 USD por kilogramo en el mercado negro asiático — uno de los artículos de contrabando de vida silvestre más valiosos del mundo.</span></p>
           </div>
         </div>
         <div class="threat-item reveal reveal-delay-3">
@@ -1271,126 +1131,130 @@
             <polyline points="9 22 9 12 15 12 15 22"/>
           </svg>
           <div>
-            <h4>Weak Enforcement</h4>
-            <p>Despite a gillnet ban in the Vaquita refuge zone (established 2015), illegal nets continue to be deployed at night, making enforcement extremely difficult.</p>
+            <h4><span data-en>Weak Enforcement</span><span data-es>Aplicación de la Ley Débil</span></h4>
+            <p><span data-en>Despite a gillnet ban in the Vaquita refuge zone (established 2015), illegal nets continue to be deployed at night, making enforcement extremely difficult.</span><span data-es>A pesar de la prohibición de redes de enmalle en la zona de refugio de la Vaquita (desde 2015), las redes ilegales se siguen colocando de noche, dificultando enormemente el control.</span></p>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Wave divider -->
   <div class="wave-divider" aria-hidden="true">
     <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
       <path d="M0,20 C240,70 480,0 720,40 C960,70 1200,0 1440,20 L1440,80 L0,80 Z" fill="#0A2540"/>
     </svg>
   </div>
 
-  <!-- ░░░ SECTION 5 — ROLE IN ECOSYSTEM ░░░ -->
+  <!-- ===== SECTION 5 — ROLE IN ECOSYSTEM ===== -->
   <section id="ecosystem">
     <div class="container">
       <div class="reveal">
-        <span class="section-label">Why It Matters</span>
-        <h2 class="section-title">GUARDIAN OF<br><span class="text-teal">OCEAN BALANCE</span></h2>
+        <span class="section-label">
+          <span data-en>Why It Matters</span>
+          <span data-es>Por Qué Importa</span>
+        </span>
+        <h2 class="section-title">
+          <span data-en>GUARDIAN OF<br><span class="text-teal">OCEAN BALANCE</span></span>
+          <span data-es>GUARDIANA DEL<br><span class="text-teal">EQUILIBRIO OCEÁNICO</span></span>
+        </h2>
         <p class="section-body">
-          The Vaquita is not merely a beautiful animal — it is an <strong>ecological indicator species</strong>.
-          Its presence signals a healthy, productive marine ecosystem. Its disappearance would be a warning
-          that the entire food web of the northern Gulf of California is under catastrophic stress.
+          <span data-en>The Vaquita is not merely a beautiful animal — it is an <strong>ecological indicator species</strong>. Its presence signals a healthy, productive marine ecosystem. Its disappearance would be a warning that the entire food web of the northern Gulf of California is under catastrophic stress.</span>
+          <span data-es>La Vaquita no es solo un animal hermoso — es una <strong>especie indicadora ecológica</strong>. Su presencia indica un ecosistema marino sano y productivo. Su desaparición sería una señal de que toda la cadena alimentaria del norte del Golfo de California está bajo un estrés catastrófico.</span>
         </p>
       </div>
 
       <div class="ecosystem-grid">
         <div class="eco-card reveal reveal-delay-1">
           <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <!-- Fish icon -->
             <path d="M8 24 Q18 10 38 24 Q18 38 8 24 Z"/>
             <circle cx="34" cy="22" r="3" fill="currentColor" opacity="0.4"/>
             <path d="M8 24 L2 18 M8 24 L2 30"/>
           </svg>
-          <h3>Controls Fish Populations</h3>
-          <p>Vaquitas feed on a variety of demersal fish, squid, and crustaceans — helping regulate prey populations and preventing overpopulation of certain species.</p>
+          <h3><span data-en>Controls Fish Populations</span><span data-es>Controla Poblaciones de Peces</span></h3>
+          <p><span data-en>Vaquitas feed on demersal fish, squid, and crustaceans — helping regulate prey populations and preventing overpopulation of certain species.</span><span data-es>Las Vaquitas se alimentan de peces demersales, calamares y crustáceos — regulando poblaciones de presas.</span></p>
         </div>
         <div class="eco-card reveal reveal-delay-2">
           <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <!-- Squid/marine life -->
             <ellipse cx="24" cy="18" rx="10" ry="7"/>
             <path d="M16 22 Q14 34 16 38 M20 23 Q19 36 20 40 M24 24 Q24 36 24 42 M28 23 Q29 36 28 40 M32 22 Q34 34 32 38"/>
             <path d="M19 14 Q24 8 29 14"/>
           </svg>
-          <h3>Supports Marine Food Web</h3>
-          <p>As a mid-trophic predator, the Vaquita bridges prey species and larger predators, maintaining the complex balance of the Gulf's food chains.</p>
+          <h3><span data-en>Supports Marine Food Web</span><span data-es>Sostiene la Red Trófica Marina</span></h3>
+          <p><span data-en>As a mid-trophic predator, the Vaquita bridges prey species and larger predators, maintaining the Gulf's food chains.</span><span data-es>Como depredador de nivel trófico medio, la Vaquita conecta especies presa con depredadores más grandes.</span></p>
         </div>
         <div class="eco-card reveal reveal-delay-3">
           <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <!-- Ecosystem health indicator -->
             <path d="M6 36 Q10 20 18 22 Q22 14 28 20 Q34 10 42 18"/>
             <circle cx="28" cy="18" r="4" fill="currentColor" opacity="0.3"/>
             <path d="M4 42 L44 42"/>
           </svg>
-          <h3>Ecosystem Health Indicator</h3>
-          <p>Scientists use Vaquita sightings as a proxy for the overall health of the northern Gulf ecosystem — a living barometer of marine biodiversity.</p>
+          <h3><span data-en>Ecosystem Health Indicator</span><span data-es>Indicador de Salud del Ecosistema</span></h3>
+          <p><span data-en>Scientists use Vaquita sightings as a proxy for overall health of the northern Gulf ecosystem — a living barometer of marine biodiversity.</span><span data-es>Los científicos usan los avistamientos de Vaquita como indicador de la salud del ecosistema del norte del Golfo.</span></p>
         </div>
         <div class="eco-card reveal reveal-delay-4">
           <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <!-- Biodiversity -->
             <circle cx="24" cy="24" r="16"/>
             <path d="M24 8 Q32 16 32 24 Q32 32 24 40 Q16 32 16 24 Q16 16 24 8 Z"/>
             <path d="M8 24 Q16 32 24 32 Q32 32 40 24 Q32 16 24 16 Q16 16 8 24 Z"/>
           </svg>
-          <h3>Biodiversity Anchor</h3>
-          <p>The Gulf of California hosts over 700 fish species, 90 marine mammals, and thousands of invertebrates. Losing the Vaquita disrupts this entire community.</p>
+          <h3><span data-en>Biodiversity Anchor</span><span data-es>Ancla de Biodiversidad</span></h3>
+          <p><span data-en>The Gulf of California hosts over 700 fish species, 90 marine mammals, and thousands of invertebrates. Losing the Vaquita disrupts this entire community.</span><span data-es>El Golfo de California alberga más de 700 especies de peces, 90 mamíferos marinos y miles de invertebrados.</span></p>
         </div>
         <div class="eco-card reveal reveal-delay-1">
           <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <!-- Fishing / livelihoods -->
             <path d="M8 32 Q16 14 24 20 Q32 26 40 12"/>
             <circle cx="14" cy="26" r="3" fill="currentColor" opacity="0.3"/>
             <path d="M6 38 L42 38 M24 38 L24 44"/>
           </svg>
-          <h3>Supports Fishermen's Livelihoods</h3>
-          <p>A healthy Gulf ecosystem sustains billions of dollars in legal fisheries. Conservation directly protects the long-term fishing industry and coastal communities.</p>
+          <h3><span data-en>Supports Fishermen's Livelihoods</span><span data-es>Sostiene los Medios de Vida de Pescadores</span></h3>
+          <p><span data-en>A healthy Gulf ecosystem sustains billions of dollars in legal fisheries. Conservation directly protects the long-term fishing industry and coastal communities.</span><span data-es>Un Golfo sano sostiene miles de millones en pesca legal. La conservación protege directamente la industria pesquera a largo plazo.</span></p>
         </div>
         <div class="eco-card reveal reveal-delay-2">
           <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <!-- Scientific/cultural value -->
             <path d="M12 36 Q12 20 24 16 Q36 20 36 36"/>
             <path d="M20 36 Q20 24 24 20 Q28 24 28 36"/>
             <path d="M8 36 L40 36"/>
             <circle cx="24" cy="10" r="4"/>
           </svg>
-          <h3>Scientific & Cultural Heritage</h3>
-          <p>The Vaquita is a unique evolutionary lineage found nowhere else. Its extinction would be an irreversible loss to science, culture, and all future generations.</p>
+          <h3><span data-en>Scientific &amp; Cultural Heritage</span><span data-es>Patrimonio Científico y Cultural</span></h3>
+          <p><span data-en>The Vaquita is a unique evolutionary lineage found nowhere else. Its extinction would be an irreversible loss to science, culture, and all future generations.</span><span data-es>La Vaquita es un linaje evolutivo único. Su extinción sería una pérdida irreversible para la ciencia, la cultura y las generaciones futuras.</span></p>
         </div>
       </div>
 
-      <!-- Quote Block -->
       <div class="quote-block reveal">
-        <p class="quote-text font-serif">
-          When a species disappears, an entire ecosystem changes forever — and so does our understanding of what it means to share this planet.
+        <p class="quote-text" style="font-family:'Playfair Display',serif">
+          <span data-en>When a species disappears, an entire ecosystem changes forever — and so does our understanding of what it means to share this planet.</span>
+          <span data-es>Cuando una especie desaparece, un ecosistema entero cambia para siempre — y también nuestra comprensión de lo que significa compartir este planeta.</span>
         </p>
       </div>
     </div>
   </section>
 
-  <!-- Wave divider -->
   <div class="wave-divider" aria-hidden="true">
     <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
       <path d="M0,60 C200,10 400,70 700,30 C900,0 1200,60 1440,30 L1440,80 L0,80 Z" fill="#0d3050"/>
     </svg>
   </div>
 
-  <!-- ░░░ SECTION 6 — WHY FISHERMEN MATTER ░░░ -->
+  <!-- ===== SECTION 6 — WHY FISHERMEN MATTER ===== -->
   <section id="fishermen">
     <div class="container">
       <div class="reveal">
-        <span class="section-label" style="color:var(--gold)">A Message to Gulf Fishermen</span>
-        <p class="fishermen-intro">YOU ARE THE KEY<br>TO SAVING THE VAQUITA</p>
-        <h2 class="section-title">FISHERMEN:<br><span style="color:var(--gold)">HEROES OF<br>CONSERVATION</span></h2>
+        <span class="section-label" style="color:var(--gold)">
+          <span data-en>A Message to Gulf Fishermen</span>
+          <span data-es>Un Mensaje para los Pescadores del Golfo</span>
+        </span>
+        <p class="fishermen-intro">
+          <span data-en>YOU ARE THE KEY<br>TO SAVING THE VAQUITA</span>
+          <span data-es>USTED ES LA CLAVE<br>PARA SALVAR A LA VAQUITA</span>
+        </p>
+        <h2 class="section-title">
+          <span data-en>FISHERMEN:<br><span style="color:var(--gold)">HEROES OF<br>CONSERVATION</span></span>
+          <span data-es>PESCADORES:<br><span style="color:var(--gold)">HÉROES DE<br>LA CONSERVACIÓN</span></span>
+        </h2>
         <p class="section-body">
-          We know that most fishermen in the Gulf of California are not criminals — they are hard-working families
-          who depend on the ocean for their livelihoods. You have fished these waters for generations.
-          That is exactly why your role is so vital: <strong>you know the sea better than anyone.</strong>
-          You are not the enemy of the Vaquita — you can be its greatest protector.
+          <span data-en>We know that most fishermen in the Gulf of California are not criminals — they are hard-working families who depend on the ocean for their livelihoods. You have fished these waters for generations. That is exactly why your role is so vital: <strong>you know the sea better than anyone.</strong> You are not the enemy of the Vaquita — you can be its greatest protector.</span>
+          <span data-es>Sabemos que la mayoría de los pescadores del Golfo de California no son criminales — son familias trabajadoras que dependen del océano para vivir. Han pescado estas aguas por generaciones. Por eso su papel es tan vital: <strong>usted conoce el mar mejor que nadie.</strong> No es el enemigo de la Vaquita — puede ser su mayor protector.</span>
         </p>
       </div>
 
@@ -1398,73 +1262,94 @@
         <div class="action-step reveal reveal-delay-1">
           <div class="step-num">01</div>
           <div>
-            <h4>Use Alternative Fishing Gear</h4>
-            <p>Curvina gillnets can be replaced with trawl-excluder devices and alternative nets that do not entangle marine mammals. Government programmes offer subsidies and support.</p>
+            <h4><span data-en>Use Alternative Fishing Gear</span><span data-es>Use Artes de Pesca Alternativas</span></h4>
+            <p><span data-en>Curvina gillnets can be replaced with trawl-excluder devices and alternative nets that do not entangle marine mammals. Government programmes offer subsidies and support.</span><span data-es>Las redes para curvina pueden reemplazarse con dispositivos excluidores y redes alternativas que no enredan mamíferos marinos. Los programas gubernamentales ofrecen subsidios y apoyo.</span></p>
           </div>
         </div>
         <div class="action-step reveal reveal-delay-2">
           <div class="step-num">02</div>
           <div>
-            <h4>Refuse to Set Illegal Nets</h4>
-            <p>Do not accept payment to set totoaba gillnets. The short-term money comes at the cost of your ocean, your community, and the extinction of a species.</p>
+            <h4><span data-en>Refuse Illegal Nets</span><span data-es>Rechace las Redes Ilegales</span></h4>
+            <p><span data-en>Do not accept payment to set totoaba gillnets. The short-term money comes at the cost of your ocean, your community, and the extinction of a species.</span><span data-es>No acepte pago para colocar redes de enmalle para totoaba. El dinero a corto plazo tiene como costo su océano, su comunidad y la extinción de una especie.</span></p>
           </div>
         </div>
         <div class="action-step reveal reveal-delay-3">
           <div class="step-num">03</div>
           <div>
-            <h4>Report Illegal Activity</h4>
-            <p>If you see illegal gillnets or poachers operating in the Vaquita refuge, report them anonymously to PROFEPA or CONAPESCA. Your information saves lives.</p>
+            <h4><span data-en>Report Illegal Activity</span><span data-es>Reporte Actividad Ilegal</span></h4>
+            <p><span data-en>If you see illegal gillnets or poachers operating in the Vaquita refuge, report them anonymously to PROFEPA or CONAPESCA. Your information saves lives.</span><span data-es>Si ve redes ilegales o cazadores furtivos en el refugio de la Vaquita, repórtelos anónimamente a PROFEPA o CONAPESCA. Su información salva vidas.</span></p>
           </div>
         </div>
         <div class="action-step reveal reveal-delay-4">
           <div class="step-num">04</div>
           <div>
-            <h4>Report Vaquita Sightings</h4>
-            <p>Any confirmed sighting is scientifically invaluable. Note the time, GPS location, and number of animals and report immediately to conservation authorities.</p>
+            <h4><span data-en>Report Vaquita Sightings</span><span data-es>Reporte Avistamientos de Vaquita</span></h4>
+            <p><span data-en>Any confirmed sighting is scientifically invaluable. Note the time, GPS location, and number of animals and report immediately to conservation authorities.</span><span data-es>Cualquier avistamiento confirmado es científicamente invaluable. Anote la hora, ubicación GPS y número de animales, y repórtelo inmediatamente.</span></p>
           </div>
         </div>
         <div class="action-step reveal reveal-delay-1">
           <div class="step-num">05</div>
           <div>
-            <h4>Educate Fellow Fishermen</h4>
-            <p>Share what you learn with your crew and community. Awareness on the water is the fastest way to change behaviour and protect the species.</p>
+            <h4><span data-en>Educate Fellow Fishermen</span><span data-es>Eduque a sus Compañeros Pescadores</span></h4>
+            <p><span data-en>Share what you learn with your crew and community. Awareness on the water is the fastest way to change behaviour and protect the species.</span><span data-es>Comparta lo que aprenda con su tripulación y comunidad. La conciencia en el agua es la forma más rápida de cambiar comportamientos.</span></p>
           </div>
         </div>
         <div class="action-step reveal reveal-delay-2">
           <div class="step-num">06</div>
           <div>
-            <h4>Join Vaquita Monitoring Programmes</h4>
-            <p>Paid community monitoring roles are available for local fishermen. Use your sea knowledge to become a guardian — and earn income legitimately.</p>
+            <h4><span data-en>Join Monitoring Programmes</span><span data-es>Únase a Programas de Monitoreo</span></h4>
+            <p><span data-en>Paid community monitoring roles are available for local fishermen. Use your sea knowledge to become a guardian — and earn income legitimately.</span><span data-es>Hay roles pagados de monitoreo comunitario para pescadores locales. Use su conocimiento del mar para convertirse en un guardián — y ganar ingresos legítimamente.</span></p>
           </div>
         </div>
       </div>
 
-      <!-- Report Box -->
+      <!-- IMPROVED: Emergency Contact Cards -->
       <div class="report-box reveal">
-        <h3>🐬 REPORT A SIGHTING OR ILLEGAL ACTIVITY</h3>
-        <p>
-          <strong style="color:var(--teal)">PROFEPA Hotline:</strong> 800 PROFEPA (800 776 3372) &nbsp;|&nbsp;
-          <strong style="color:var(--teal)">CONAPESCA:</strong> conapesca.gob.mx &nbsp;|&nbsp;
-          <strong style="color:var(--teal)">WWF Mexico:</strong> wwf.org.mx/vaquita<br><br>
-          Sightings reported by fishermen have been critical in tracking the remaining Vaquita population.
-          Every report helps scientists understand where these animals are and how to protect them.
+        <h3>
+          <span data-en>REPORT A SIGHTING OR ILLEGAL ACTIVITY</span>
+          <span data-es>REPORTE UN AVISTAMIENTO O ACTIVIDAD ILEGAL</span>
+        </h3>
+        <p style="margin-bottom:0">
+          <span data-en>Sightings reported by fishermen have been critical in tracking the remaining Vaquita population. Every report helps scientists understand where these animals are and how to protect them.</span>
+          <span data-es>Los avistamientos reportados por pescadores han sido fundamentales para rastrear la población restante de Vaquitas. Cada reporte ayuda a los científicos a entender dónde están estos animales y cómo protegerlos.</span>
         </p>
+      </div>
+
+      <div class="contact-grid reveal">
+        <div class="contact-card">
+          <div class="contact-org">PROFEPA</div>
+          <div class="contact-phone">800 776 3372</div>
+          <div class="contact-desc"><span data-en>Federal Environmental Protection Hotline — Anonymous reports accepted</span><span data-es>Línea de Protección Ambiental Federal — Se aceptan reportes anónimos</span></div>
+        </div>
+        <div class="contact-card">
+          <div class="contact-org">CONAPESCA</div>
+          <div class="contact-phone">conapesca.gob.mx</div>
+          <div class="contact-desc"><span data-en>National Fisheries Commission — Vaquita bycatch reporting</span><span data-es>Comisión Nacional de Acuacultura y Pesca — Reportes de captura incidental</span></div>
+        </div>
+        <div class="contact-card">
+          <div class="contact-org">WWF Mexico</div>
+          <div class="contact-phone">wwf.org.mx/vaquita</div>
+          <div class="contact-desc"><span data-en>Conservation support, gear alternatives, and monitoring programmes</span><span data-es>Apoyo en conservación, alternativas de artes de pesca y programas de monitoreo</span></div>
+        </div>
+        <div class="contact-card">
+          <div class="contact-org">Vaquita CPR</div>
+          <div class="contact-phone">vaquitacpr.org</div>
+          <div class="contact-desc"><span data-en>International conservation and research partnership</span><span data-es>Asociación internacional de conservación e investigación</span></div>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- Wave divider -->
   <div class="wave-divider" aria-hidden="true">
     <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
       <path d="M0,30 C360,80 720,0 1080,50 C1260,70 1380,20 1440,30 L1440,80 L0,80 Z" fill="#061828"/>
     </svg>
   </div>
 
-  <!-- ░░░ SECTION 7 — CALL TO ACTION ░░░ -->
+  <!-- ===== SECTION 7 — CTA ===== -->
   <section id="cta">
     <div class="container">
       <div class="reveal">
-        <!-- Mini Vaquita icon -->
         <svg width="80" height="44" viewBox="0 0 500 260" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin:0 auto 24px;display:block;opacity:0.7" aria-hidden="true">
           <ellipse cx="240" cy="145" rx="185" ry="68" fill="#2EC4B6" opacity="0.4"/>
           <ellipse cx="78" cy="140" rx="62" ry="50" fill="#2EC4B6" opacity="0.4"/>
@@ -1472,75 +1357,87 @@
           <circle cx="68" cy="128" r="14" fill="#0A2540" stroke="#2EC4B6" stroke-width="2"/>
           <path d="M405 128 Q440 95 455 115 Q445 140 432 138 Q435 158 452 162 Q445 180 415 155 Z" fill="#2EC4B6" opacity="0.5"/>
         </svg>
-        <h2 class="cta-title">PROTECT THE OCEAN.<br>PROTECT THE <span class="text-teal">VAQUITA.</span></h2>
-        <p class="cta-sub">Time is running out. Every action counts. Every voice matters.</p>
+        <h2 class="cta-title">
+          <span data-en>PROTECT THE OCEAN.<br>PROTECT THE <span class="text-teal">VAQUITA.</span></span>
+          <span data-es>PROTEGE EL OCÉANO.<br>PROTEGE A LA <span class="text-teal">VAQUITA.</span></span>
+        </h2>
+        <p class="cta-sub">
+          <span data-en>Time is running out. Every action counts. Every voice matters.</span>
+          <span data-es>El tiempo se acaba. Cada acción cuenta. Cada voz importa.</span>
+        </p>
       </div>
 
       <div class="cta-buttons reveal">
-        <a href="https://www.wwf.org.mx/en/what_we_do/species/vaquita/" target="_blank" rel="noopener" class="btn btn-primary">Learn More</a>
-        <a href="https://www.vaquitacpr.org" target="_blank" rel="noopener" class="btn btn-warn">Support Conservation</a>
-        <a href="https://www.porpoise.org/vaquita" target="_blank" rel="noopener" class="btn btn-outline">Spread Awareness</a>
+        <a href="https://www.wwf.org.mx/en/what_we_do/species/vaquita/" target="_blank" rel="noopener" class="btn btn-primary">
+          <span data-en>Learn More</span><span data-es>Aprender Más</span>
+        </a>
+        <a href="https://www.vaquitacpr.org" target="_blank" rel="noopener" class="btn btn-warn">
+          <span data-en>Support Conservation</span><span data-es>Apoyar la Conservación</span>
+        </a>
+        <a href="https://www.porpoise.org/vaquita" target="_blank" rel="noopener" class="btn btn-outline">
+          <span data-en>Spread Awareness</span><span data-es>Difundir la Conciencia</span>
+        </a>
       </div>
 
-      <!-- Additional facts strip -->
       <div class="reveal" style="margin-top:72px; padding-top:48px; border-top:1px solid rgba(46,196,182,0.15); display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:24px; text-align:center;">
         <div>
           <div style="font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--teal);letter-spacing:0.06em;">1 Species</div>
-          <div style="font-size:0.78rem;color:rgba(255,255,255,0.5);margin-top:4px;letter-spacing:0.1em;text-transform:uppercase;">Lost = 1 Gone Forever</div>
+          <div style="font-size:0.78rem;color:rgba(255,255,255,0.5);margin-top:4px;letter-spacing:0.1em;text-transform:uppercase;"><span data-en>Lost = 1 Gone Forever</span><span data-es>Perdida = 1 Perdida para Siempre</span></div>
         </div>
         <div>
           <div style="font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--teal);letter-spacing:0.06em;">3,000+ km²</div>
-          <div style="font-size:0.78rem;color:rgba(255,255,255,0.5);margin-top:4px;letter-spacing:0.1em;text-transform:uppercase;">Protected Refuge Zone</div>
+          <div style="font-size:0.78rem;color:rgba(255,255,255,0.5);margin-top:4px;letter-spacing:0.1em;text-transform:uppercase;"><span data-en>Protected Refuge Zone</span><span data-es>Zona de Refugio Protegida</span></div>
         </div>
         <div>
           <div style="font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--teal);letter-spacing:0.06em;">1958</div>
-          <div style="font-size:0.78rem;color:rgba(255,255,255,0.5);margin-top:4px;letter-spacing:0.1em;text-transform:uppercase;">Year Species Discovered</div>
+          <div style="font-size:0.78rem;color:rgba(255,255,255,0.5);margin-top:4px;letter-spacing:0.1em;text-transform:uppercase;"><span data-en>Year Species Discovered</span><span data-es>Año en que fue Descubierta</span></div>
         </div>
         <div>
           <div style="font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--teal);letter-spacing:0.06em;">2026</div>
-          <div style="font-size:0.78rem;color:rgba(255,255,255,0.5);margin-top:4px;letter-spacing:0.1em;text-transform:uppercase;">Last Chance to Act</div>
+          <div style="font-size:0.78rem;color:rgba(255,255,255,0.5);margin-top:4px;letter-spacing:0.1em;text-transform:uppercase;"><span data-en>Last Chance to Act</span><span data-es>Última Oportunidad para Actuar</span></div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- FOOTER -->
   <footer>
     <p>
       <strong>Vaquita Conservation Awareness Campaign</strong><br>
-      Designed to educate fishermen and communities in the Gulf of California.<br>
-      Sources: IUCN Red List · WWF Mexico · CONAPESCA · Vaquita CPR · Sea Shepherd<br>
+      <span data-en>Designed to educate fishermen and communities in the Gulf of California.</span>
+      <span data-es>Diseñado para educar a pescadores y comunidades del Golfo de California.</span><br>
+      Sources: IUCN Red List · WWF Mexico · CONAPESCA · Vaquita CPR · Sea Shepherd · Rojas-Bracho et al. (2019)<br>
       <span style="color:rgba(255,255,255,0.2); font-size:0.72rem;">This is an educational awareness poster. All rights reserved. No commercial use.</span>
     </p>
   </footer>
 
-  <!-- =====================================================
-       JAVASCRIPT — ANIMATIONS & INTERACTIONS
-  ====================================================== -->
+  <div class="source-strip">
+    Population data: Rojas-Bracho et al. (2019) · Taylor et al. (2017) · IUCN 2023 · CIRVA Technical Report 2024
+  </div>
+
+  <!-- ===== JAVASCRIPT ===== -->
   <script>
-    // ──────────────────────────────────────────────────
-    // 1. LIGHT RAYS ANIMATION
-    // ──────────────────────────────────────────────────
+    // ---- LANGUAGE TOGGLE ----
+    function setLang(lang) {
+      document.body.classList.toggle('es', lang === 'es');
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent.toLowerCase() === lang);
+      });
+    }
+
+    // ---- LIGHT RAYS ----
     (function initRays() {
       const canvas = document.getElementById('rays-canvas');
-      const ctx    = canvas.getContext('2d');
+      const ctx = canvas.getContext('2d');
       let W, H;
-
-      function resize() {
-        W = canvas.width  = window.innerWidth;
-        H = canvas.height = window.innerHeight;
-      }
+      function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
       resize();
       window.addEventListener('resize', resize);
-
       const rays = Array.from({ length: 8 }, (_, i) => ({
-        angle: -0.3 + i * 0.09,
-        width: 60 + Math.random() * 80,
+        angle: -0.3 + i * 0.09, width: 60 + Math.random() * 80,
         alpha: 0.3 + Math.random() * 0.4,
         speed: 0.0003 + Math.random() * 0.0004,
         offset: Math.random() * Math.PI * 2,
       }));
-
       function draw(ts) {
         ctx.clearRect(0, 0, W, H);
         rays.forEach(r => {
@@ -1549,15 +1446,10 @@
           const len = H * 1.8;
           const perpX = Math.cos(a + Math.PI / 2);
           const perpY = Math.sin(a + Math.PI / 2);
-
-          const grd = ctx.createLinearGradient(
-            x0, 0,
-            x0 + Math.sin(a) * len, Math.cos(a) * len
-          );
-          grd.addColorStop(0,   `rgba(46,196,182,${r.alpha})`);
+          const grd = ctx.createLinearGradient(x0, 0, x0 + Math.sin(a) * len, Math.cos(a) * len);
+          grd.addColorStop(0, `rgba(46,196,182,${r.alpha})`);
           grd.addColorStop(0.5, `rgba(46,196,182,${r.alpha * 0.4})`);
-          grd.addColorStop(1,   `rgba(46,196,182,0)`);
-
+          grd.addColorStop(1, `rgba(46,196,182,0)`);
           ctx.beginPath();
           ctx.moveTo(x0 + perpX * r.width * 0.5, 0);
           ctx.lineTo(x0 + Math.sin(a) * len + perpX * r.width * 0.5, Math.cos(a) * len);
@@ -1572,30 +1464,23 @@
       requestAnimationFrame(draw);
     })();
 
-    // ──────────────────────────────────────────────────
-    // 2. FLOATING BUBBLES ANIMATION
-    // ──────────────────────────────────────────────────
+    // ---- BUBBLES ----
     (function initBubbles() {
       const canvas = document.getElementById('bubble-canvas');
-      const ctx    = canvas.getContext('2d');
+      const ctx = canvas.getContext('2d');
       let W, H;
-
-      function resize() {
-        W = canvas.width  = window.innerWidth;
-        H = canvas.height = window.innerHeight;
-      }
+      function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
       resize();
       window.addEventListener('resize', resize);
-
       class Bubble {
         constructor() { this.reset(true); }
         reset(init) {
-          this.x    = Math.random() * W;
-          this.y    = init ? Math.random() * H : H + 20;
-          this.r    = 2 + Math.random() * 9;
-          this.vy   = -(0.2 + Math.random() * 0.6);
-          this.vx   = (Math.random() - 0.5) * 0.3;
-          this.alpha= 0.05 + Math.random() * 0.2;
+          this.x = Math.random() * W;
+          this.y = init ? Math.random() * H : H + 20;
+          this.r = 2 + Math.random() * 9;
+          this.vy = -(0.2 + Math.random() * 0.6);
+          this.vx = (Math.random() - 0.5) * 0.3;
+          this.alpha = 0.05 + Math.random() * 0.2;
           this.wobble = Math.random() * Math.PI * 2;
           this.wobbleSpeed = 0.01 + Math.random() * 0.015;
         }
@@ -1609,18 +1494,15 @@
           ctx.beginPath();
           ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
           ctx.strokeStyle = `rgba(46,196,182,${this.alpha})`;
-          ctx.lineWidth   = 1;
+          ctx.lineWidth = 1;
           ctx.stroke();
-          // Highlight
           ctx.beginPath();
           ctx.arc(this.x - this.r * 0.3, this.y - this.r * 0.3, this.r * 0.25, 0, Math.PI * 2);
           ctx.fillStyle = `rgba(255,255,255,${this.alpha * 0.6})`;
           ctx.fill();
         }
       }
-
       const bubbles = Array.from({ length: 55 }, () => new Bubble());
-
       function loop() {
         ctx.clearRect(0, 0, W, H);
         bubbles.forEach(b => { b.update(); b.draw(); });
@@ -1629,9 +1511,7 @@
       requestAnimationFrame(loop);
     })();
 
-    // ──────────────────────────────────────────────────
-    // 3. SCROLL REVEAL (Intersection Observer)
-    // ──────────────────────────────────────────────────
+    // ---- SCROLL REVEAL ----
     (function initReveal() {
       const reveals = document.querySelectorAll('.reveal');
       const observer = new IntersectionObserver((entries) => {
@@ -1645,37 +1525,83 @@
       reveals.forEach(el => observer.observe(el));
     })();
 
-    // ──────────────────────────────────────────────────
-    // 4. PARALLAX EFFECT ON SCROLL
-    // ──────────────────────────────────────────────────
+    // ---- PARALLAX ----
     (function initParallax() {
       const hero = document.getElementById('hero');
       window.addEventListener('scroll', () => {
         const sy = window.scrollY;
-        // Move vaquita slightly on scroll for depth
         const vw = hero.querySelector('.vaquita-wrap');
         if (vw) vw.style.transform = `translateY(${sy * 0.18}px)`;
-        // Adjust canvas opacity to simulate descending
         const raysCanvas = document.getElementById('rays-canvas');
         raysCanvas.style.opacity = Math.max(0.03, 0.07 - sy * 0.00006);
       }, { passive: true });
     })();
 
-    // ──────────────────────────────────────────────────
-    // 5. STAT COUNTER ANIMATION
-    // ──────────────────────────────────────────────────
-    (function initCounters() {
-      // Animate population numbers when stats come into view
-      const statsSection = document.getElementById('threat');
-      let animated = false;
+    // ---- POPULATION BAR CHART ----
+    (function buildChart() {
+      const data = [
+        { year: '1997', count: 567 },
+        { year: '2008', count: 245 },
+        { year: '2012', count: 200 },
+        { year: '2015', count: 97 },
+        { year: '2018', count: 19 },
+        { year: '2021', count: 10 },
+        { year: '2024', count: 6 },
+      ];
+      const max = 567;
+      const chartH = 164; // usable bar height
 
-      const obs = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && !animated) {
-          animated = true;
-          obs.disconnect();
-        }
-      }, { threshold: 0.3 });
-      if (statsSection) obs.observe(statsSection);
+      const container = document.getElementById('barChart');
+      data.forEach((d, i) => {
+        const heightPct = (d.count / max) * 100;
+        const heightPx = Math.max((d.count / max) * chartH, 4);
+
+        // color: interpolate from teal → warn based on decline
+        const danger = 1 - (d.count / max);
+        const r = Math.round(46 + danger * (255 - 46));
+        const g = Math.round(196 - danger * (196 - 107));
+        const b = Math.round(182 - danger * (182 - 53));
+        const color = `rgb(${r},${g},${b})`;
+
+        const col = document.createElement('div');
+        col.className = 'bar-col';
+
+        const val = document.createElement('div');
+        val.className = 'bar-val';
+        val.textContent = d.count;
+        val.style.color = color;
+        val.style.opacity = '0';
+        val.style.transition = `opacity 0.4s ${i * 0.1 + 0.8}s`;
+
+        const bar = document.createElement('div');
+        bar.className = 'bar';
+        bar.style.height = '0px';
+        bar.style.background = color;
+        bar.style.opacity = '0.85';
+        bar.title = `${d.year}: ~${d.count} individuals`;
+
+        const yearLabel = document.createElement('div');
+        yearLabel.className = 'bar-year';
+        yearLabel.textContent = d.year;
+        bar.appendChild(yearLabel);
+
+        col.appendChild(val);
+        col.appendChild(bar);
+        container.appendChild(col);
+
+        // Animate on scroll
+        const obs = new IntersectionObserver(entries => {
+          if (entries[0].isIntersecting) {
+            setTimeout(() => {
+              bar.style.height = heightPx + 'px';
+              bar.style.transition = `height 1.2s cubic-bezier(0.2,0.8,0.2,1) ${i * 0.12}s`;
+              val.style.opacity = '1';
+            }, 100);
+            obs.disconnect();
+          }
+        }, { threshold: 0.3 });
+        obs.observe(container);
+      });
     })();
   </script>
 </body>
